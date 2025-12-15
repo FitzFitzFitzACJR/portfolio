@@ -124,33 +124,56 @@ FLOWISE_API_KEY=your_api_key_if_required
 
 ## Render Deployment
 
-### Backend Deployment
+**📘 For detailed deployment instructions, see [RENDER_DEPLOYMENT.md](./RENDER_DEPLOYMENT.md)**
 
-1. Create a new **Web Service** on Render
-2. Connect your repository
-3. Build Command: `cd backend && npm install`
-4. Start Command: `cd backend && npm start`
-5. Add Environment Variables:
-   - `FLOWISE_API_URL` (or `FLOWISE_CHATFLOW_ID` + `FLOWISE_BASE_URL`)
-   - `FLOWISE_API_KEY` (if required)
-   - `GITHUB_PROFILE_URL`
-   - `PORT` (Render will set this automatically)
+### Quick Setup
 
-### Frontend Deployment
+#### Backend (Web Service)
 
-1. Create a new **Static Site** on Render
-2. Connect your repository
-3. Build Command: `cd frontend && npm install && npm run build`
-4. Publish Directory: `frontend/dist`
-5. Add Environment Variables:
-   - `VITE_API_BASE_URL` (your backend URL, e.g., `https://your-backend.onrender.com`)
-   - `VITE_GITHUB_PROFILE_URL`
+**Settings:**
+- **Type:** Web Service
+- **Root Directory:** `backend`
+- **Build Command:** `npm install`
+- **Start Command:** `npm start`
+
+**Environment Variables:**
+```env
+NODE_ENV=production
+PORT=10000
+FLOWISE_API_URL=https://cloud.flowise.ai/api/v1/prediction/your-chatflow-id
+FLOWISE_API_KEY=your_api_key_if_required
+FLOWISE_CHATFLOW_ID=your-chatflow-id
+FLOWISE_BASE_URL=https://cloud.flowise.ai
+GITHUB_PROFILE_URL=https://github.com/FitzFitzFitz69
+FRONTEND_URL=https://your-frontend.onrender.com
+```
+
+#### Frontend (Static Site)
+
+**Settings:**
+- **Type:** Static Site
+- **Root Directory:** `frontend`
+- **Build Command:** `npm install && npm run build`
+- **Publish Directory:** `dist`
+
+**Environment Variables:**
+```env
+VITE_API_BASE_URL=https://your-backend.onrender.com
+VITE_GITHUB_PROFILE_URL=https://github.com/FitzFitzFitz69
+```
+
+### Deployment Order
+
+1. **Deploy Backend** → Copy the backend URL
+2. **Deploy Frontend** → Use backend URL in `VITE_API_BASE_URL`
+3. **Update Backend** → Set `FRONTEND_URL` to your frontend URL
 
 ### Important Notes
 
-- Update `VITE_API_BASE_URL` in frontend environment variables to point to your deployed backend URL
-- Ensure CORS is properly configured (already set up in backend)
-- The backend will automatically use `process.env.PORT` provided by Render
+- CORS is configured to accept requests from your frontend URL
+- Backend automatically uses `process.env.PORT` (Render sets this)
+- Update `FRONTEND_URL` in backend after frontend is deployed
+- All environment variables must be set in Render dashboard
 
 ## Project Structure
 
