@@ -21,7 +21,7 @@ const Hero = () => {
           <div className="flex-shrink-0">
             <div className="w-48 h-48 rounded-full bg-white/20 backdrop-blur-sm border-4 border-white/30 flex items-center justify-center overflow-hidden">
               <img 
-                src="/placeholder-avatar.jpg" 
+                src="https://raw.githubusercontent.com/FitzFitzFitz69/pic/main/994540f3-43ee-41d6-a692-72841d021de2.jpg" 
                 alt="Arnold Cutad Jr." 
                 className="w-full h-full object-cover"
                 onError={(e) => {
