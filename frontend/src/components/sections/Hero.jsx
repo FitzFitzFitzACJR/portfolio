@@ -35,7 +35,12 @@ export default function Hero() {
             )}
             <button type="button" onClick={openChat} className="btn text-white underline-offset-4 hover:underline">
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                />
               </svg>
               Ask my AI assistant
             </button>
@@ -50,6 +55,8 @@ export default function Hero() {
             width={profile.avatar.width}
             height={profile.avatar.height}
             alt={profile.avatar.alt}
+            // React 18 drops the camelCase `fetchPriority` prop; the lowercase attribute reaches the DOM.
+            // eslint-disable-next-line react/no-unknown-property
             fetchpriority="high"
             className="h-40 w-40 rounded-full object-cover shadow-2xl ring-4 ring-white/25 md:h-60 md:w-60"
           />

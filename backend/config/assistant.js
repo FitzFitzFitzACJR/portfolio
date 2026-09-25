@@ -30,8 +30,10 @@ export function resolveAssistantConfig(env = process.env, { systemPrompt } = {})
   const prompt = systemPrompt ?? readSystemPrompt(SYSTEM_PROMPT_PATH);
 
   if (!apiKey) return { enabled: false, reason: 'set ANTHROPIC_API_KEY' };
-  if (isPlaceholder(apiKey)) return { enabled: false, reason: 'ANTHROPIC_API_KEY still contains a placeholder (<...>)' };
-  if (!prompt) return { enabled: false, reason: 'backend/assistant/system-prompt.md is missing – run `npm run kb:export`' };
+  if (isPlaceholder(apiKey))
+    return { enabled: false, reason: 'ANTHROPIC_API_KEY still contains a placeholder (<...>)' };
+  if (!prompt)
+    return { enabled: false, reason: 'backend/assistant/system-prompt.md is missing – run `npm run kb:export`' };
 
   return { enabled: true, apiKey, model, dailyLimit, systemPrompt: prompt };
 }

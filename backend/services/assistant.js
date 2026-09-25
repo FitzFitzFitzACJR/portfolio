@@ -28,8 +28,7 @@ const REQUEST_TIMEOUT_MS = 45_000;
  * @param {{ anthropic?: Anthropic }} [deps] - inject a client (or one with a mock baseURL) for tests
  */
 export function createAssistantClient(config, { anthropic } = {}) {
-  const client =
-    anthropic ?? new Anthropic({ apiKey: config.apiKey, timeout: REQUEST_TIMEOUT_MS, maxRetries: 1 });
+  const client = anthropic ?? new Anthropic({ apiKey: config.apiKey, timeout: REQUEST_TIMEOUT_MS, maxRetries: 1 });
 
   const buildParams = (messages) => ({
     model: config.model,
@@ -93,7 +92,8 @@ export function toChatError(err) {
   if (err instanceof ChatError) return err;
   // Most specific first: the abort/timeout classes extend the broader ones.
   if (err instanceof Anthropic.APIUserAbortError) return new ChatError('ABORTED', 'Request aborted by client');
-  if (err instanceof Anthropic.APIConnectionTimeoutError) return new ChatError('UPSTREAM_TIMEOUT', 'Claude API timed out');
+  if (err instanceof Anthropic.APIConnectionTimeoutError)
+    return new ChatError('UPSTREAM_TIMEOUT', 'Claude API timed out');
   if (err instanceof Anthropic.AuthenticationError) {
     return new ChatError('UPSTREAM_ERROR', 'Claude API 401: invalid ANTHROPIC_API_KEY');
   }
@@ -112,7 +112,8 @@ export function toChatError(err) {
   if (err instanceof Anthropic.APIError && err.status) {
     return new ChatError('UPSTREAM_ERROR', `Claude API ${err.status} (${err.type ?? 'error'}): ${err.message}`);
   }
-  if (err instanceof Anthropic.APIConnectionError) return new ChatError('UPSTREAM_ERROR', `Cannot reach Claude API: ${err.message}`);
+  if (err instanceof Anthropic.APIConnectionError)
+    return new ChatError('UPSTREAM_ERROR', `Cannot reach Claude API: ${err.message}`);
   if (err?.name === 'AbortError') return new ChatError('ABORTED', 'Request aborted by client');
   return new ChatError('UPSTREAM_ERROR', `Unexpected assistant error: ${err?.message ?? err}`);
 }

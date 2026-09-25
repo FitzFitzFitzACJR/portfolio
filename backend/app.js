@@ -10,7 +10,12 @@ import { resolveGitHubConfig } from './config/github.js';
 import { createGitHubService } from './services/github.js';
 import { createResendMailer, resolveMailerConfig } from './services/mailer.js';
 
-const DEV_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:4173', 'http://127.0.0.1:4173'];
+const DEV_ORIGINS = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:4173',
+  'http://127.0.0.1:4173',
+];
 
 /** Allowed browser origins: FRONTEND_URL (comma-separated), plus local Vite ports outside production. */
 export function resolveAllowedOrigins(env = process.env) {

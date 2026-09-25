@@ -10,8 +10,8 @@
  */
 
 // Account was renamed from FitzFitzFitz69 in 2026; old profile links 404.
-const GITHUB_USERNAME = 'FitzFitzFitzACJR';
-const github = (repo) => `https://github.com/${GITHUB_USERNAME}/${repo}`;
+const GITHUB_USERNAME = 'FitzFitzFitzACJR'
+const github = (repo) => `https://github.com/${GITHUB_USERNAME}/${repo}`
 
 const profile = {
   name: 'Arnold Cutad Jr.',
@@ -69,11 +69,30 @@ const profile = {
     { category: 'Tools & Deployment', items: ['Git', 'GitHub', 'Render', 'VS Code', 'Environment configuration'] },
     {
       category: 'QA & Process',
-      items: ['Test planning', 'Bug reporting', 'Regression testing', 'Test matrices', 'Test automation tooling', 'Project management', 'Agile planning'],
+      items: [
+        'Test planning',
+        'Bug reporting',
+        'Regression testing',
+        'Test matrices',
+        'Test automation tooling',
+        'Project management',
+        'Agile planning',
+      ],
     },
   ],
   // Short list for compact spots (hero chips).
-  featuredSkills: ['Angular', 'React', 'TypeScript', 'Node.js', 'Express.js', 'PHP', 'MySQL', 'Tailwind CSS', 'REST APIs', 'JWT'],
+  featuredSkills: [
+    'Angular',
+    'React',
+    'TypeScript',
+    'Node.js',
+    'Express.js',
+    'PHP',
+    'MySQL',
+    'Tailwind CSS',
+    'REST APIs',
+    'JWT',
+  ],
 
   experience: [
     {
@@ -121,7 +140,8 @@ const profile = {
       image: null, // TODO: screenshot (Phase 4 adds images to frontend/public)
       description:
         'An AI-powered website builder that lets creators and local businesses generate, customize and publish professional websites.',
-      problem: 'Creators and local businesses need professional websites without hiring a developer or learning to code.',
+      problem:
+        'Creators and local businesses need professional websites without hiring a developer or learning to code.',
       contribution: [
         'Led the project as Project Manager, spearheading planning and operations.',
         'Worked on the frontend (Next.js client).', // TODO: which screens/features you built (optional)
@@ -145,7 +165,8 @@ const profile = {
       private: true,
       liveUrl: null,
       image: null, // TODO: screenshot (optional, if allowed)
-      description: 'A launcher that automates logins, so QA testing starts in one click instead of repeated manual sign-ins.',
+      description:
+        'A launcher that automates logins, so QA testing starts in one click instead of repeated manual sign-ins.',
       problem: 'Signing in by hand again and again slows down manual QA testing.',
       contribution: ['Designed and built the tool.'],
       built: ['Automated login flow triggered from a single launcher.'], // TODO: more detail (optional)
@@ -161,7 +182,8 @@ const profile = {
       repo: { owner: GITHUB_USERNAME, name: 'portfolio', url: github('portfolio') },
       liveUrl: null, // TODO: same as siteUrl once deployed
       image: null,
-      description: "This portfolio site: React + Express with an AI assistant, powered by Claude, that answers visitors' questions about Arnold's experience and projects.",
+      description:
+        "This portfolio site: React + Express with an AI assistant, powered by Claude, that answers visitors' questions about Arnold's experience and projects.",
       problem: null,
       contribution: ['Designed, built and deployed the frontend, backend and AI integration.'],
       built: [
@@ -178,7 +200,11 @@ const profile = {
       badge: 'Academic project',
       role: 'Developer',
       team: false,
-      repo: { owner: GITHUB_USERNAME, name: 'SysArch-SitInMonitoringSystem', url: github('SysArch-SitInMonitoringSystem') },
+      repo: {
+        owner: GITHUB_USERNAME,
+        name: 'SysArch-SitInMonitoringSystem',
+        url: github('SysArch-SitInMonitoringSystem'),
+      },
       liveUrl: null,
       image: null,
       description: 'A PHP and MySQL laboratory monitoring system with session tracking, user management and reporting.',
@@ -205,6 +231,6 @@ const profile = {
       'How can I contact Arnold?',
     ],
   },
-};
+}
 
-export default profile;
+export default profile

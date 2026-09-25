@@ -22,12 +22,22 @@ export default function Footer() {
               </li>
             ))}
             <li>
-              <a href={profile.socials.github} target="_blank" rel="noopener noreferrer" className="text-muted hover:text-fg">
+              <a
+                href={profile.socials.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted hover:text-fg"
+              >
                 GitHub<span className="sr-only"> (opens in a new tab)</span>
               </a>
             </li>
             <li>
-              <a href={profile.socials.linkedin} target="_blank" rel="noopener noreferrer" className="text-muted hover:text-fg">
+              <a
+                href={profile.socials.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted hover:text-fg"
+              >
                 LinkedIn<span className="sr-only"> (opens in a new tab)</span>
               </a>
             </li>

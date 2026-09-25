@@ -1,5 +1,5 @@
-import ReactMarkdown from 'react-markdown';
-import rehypeSanitize from 'rehype-sanitize';
+import ReactMarkdown from 'react-markdown'
+import rehypeSanitize from 'rehype-sanitize'
 
 /* eslint-disable no-unused-vars -- `node` is destructured so it isn't forwarded to the DOM */
 const components = {
@@ -21,11 +21,16 @@ const components = {
   h1: ({ node, ...props }) => <p className="mb-2 font-semibold" {...props} />,
   h2: ({ node, ...props }) => <p className="mb-2 font-semibold" {...props} />,
   h3: ({ node, ...props }) => <p className="mb-2 font-semibold" {...props} />,
-  code: ({ node, ...props }) => <code className="rounded bg-surface-2 px-1 py-0.5 font-mono text-[0.85em]" {...props} />,
-  pre: ({ node, ...props }) => (
-    <pre className="mb-2 overflow-x-auto rounded bg-gray-800 p-3 text-gray-100 [&_code]:bg-transparent [&_code]:p-0" {...props} />
+  code: ({ node, ...props }) => (
+    <code className="rounded bg-surface-2 px-1 py-0.5 font-mono text-[0.85em]" {...props} />
   ),
-};
+  pre: ({ node, ...props }) => (
+    <pre
+      className="mb-2 overflow-x-auto rounded bg-gray-800 p-3 text-gray-100 [&_code]:bg-transparent [&_code]:p-0"
+      {...props}
+    />
+  ),
+}
 /* eslint-enable no-unused-vars */
 
 /** Render an assistant reply as sanitized markdown. Raw HTML is never rendered. */
@@ -34,5 +39,5 @@ export default function ChatMarkdown({ children }) {
     <ReactMarkdown rehypePlugins={[rehypeSanitize]} components={components}>
       {children}
     </ReactMarkdown>
-  );
+  )
 }

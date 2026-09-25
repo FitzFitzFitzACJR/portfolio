@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [
     "express",
@@ -26,5 +28,9 @@
   },
   "engines": {
     "node": "22.x || 24.x"
+  },
+  "devDependencies": {
+    "supertest": "^7.3.0",
+    "vitest": "^3.2.7"
   }
 }

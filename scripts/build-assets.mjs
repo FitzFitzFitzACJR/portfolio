@@ -18,10 +18,17 @@ import profile from '../frontend/src/content/profile.js';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC = path.join(root, 'frontend/public');
 const esc = (value) =>
-  String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  String(value).replace(
+    /[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]
+  );
 
 function screenshot(html, file, width, height) {
-  renderHtml(html, [`--screenshot=${path.join(PUBLIC, file)}`, `--window-size=${width},${height}`, '--default-background-color=00000000']);
+  renderHtml(html, [
+    `--screenshot=${path.join(PUBLIC, file)}`,
+    `--window-size=${width},${height}`,
+    '--default-background-color=00000000',
+  ]);
   console.log(`Wrote frontend/public/${file} (${width}x${height})`);
 }
 

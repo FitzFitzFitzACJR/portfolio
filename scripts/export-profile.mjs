@@ -24,9 +24,14 @@ const PROMPT_PATH = path.join(root, 'backend/assistant/system-prompt.md');
 const PROFILE_JSON_PATH = path.join(root, 'backend/content/profile.json');
 
 const p = profile;
-const lines = (...parts) => parts.flat().filter((part) => part !== null && part !== undefined && part !== false).join('\n');
+const lines = (...parts) =>
+  parts
+    .flat()
+    .filter((part) => part !== null && part !== undefined && part !== false)
+    .join('\n');
 const bullets = (items) => (present(items) ? items.map((item) => `- ${item}`) : []);
-const field = (label, value) => (present(value) ? `**${label}:** ${Array.isArray(value) ? value.join(', ') : value}  ` : null);
+const field = (label, value) =>
+  present(value) ? `**${label}:** ${Array.isArray(value) ? value.join(', ') : value}  ` : null;
 const list = (items) => {
   if (items.length <= 1) return items.join('');
   return `${items.slice(0, -1).join(', ')} and ${items.at(-1)}`;
@@ -36,8 +41,7 @@ const intern = p.experience.find((e) => /intern/i.test(e.type ?? ''));
 const edu = p.education[0];
 const capstone = p.featuredProjects.find((project) => /capstone/i.test(project.badge ?? ''));
 const qaLauncher = p.featuredProjects.find((project) => project.slug === 'qa-launcher');
-const projectLink = (project) =>
-  project.private ? 'Private repository (not public)' : project.repo?.url ?? null;
+const projectLink = (project) => (project.private ? 'Private repository (not public)' : (project.repo?.url ?? null));
 
 function experienceSection() {
   return p.experience.map((e) =>
@@ -80,9 +84,11 @@ function projectSection(project) {
     '',
     project.description,
     '',
-    present(project.problem) ? `**Problem:** ${project.problem}
-` : null,
-    present(project.contribution) ? lines("**What Arnold did:**", bullets(project.contribution), '') : null,
+    present(project.problem)
+      ? `**Problem:** ${project.problem}
+`
+      : null,
+    present(project.contribution) ? lines('**What Arnold did:**', bullets(project.contribution), '') : null,
     present(project.built) ? lines('**What was built:**', bullets(project.built)) : null,
     present(project.outcome) ? `**Outcome:** ${project.outcome}` : null,
     ''
@@ -105,7 +111,10 @@ function faq() {
       `What was ${p.firstName}'s capstone project?`,
       `${capstone.name}: ${capstone.description} It was a team project${capstone.repo ? ` (repository: ${capstone.repo.url})` : ''}.`,
     ],
-    capstone && [`What was ${p.firstName}'s role in the capstone?`, `${capstone.role}. ${capstone.contribution.join(' ')}`],
+    capstone && [
+      `What was ${p.firstName}'s role in the capstone?`,
+      `${capstone.role}. ${capstone.contribution.join(' ')}`,
+    ],
     qaLauncher && [
       'What is the QA Launcher?',
       `${qaLauncher.description} ${p.firstName} built it with ${list(qaLauncher.tech)}. The code is in a private repository, so there is no public link.`,
@@ -114,7 +123,10 @@ function faq() {
       `What technologies does ${p.firstName} use?`,
       p.skills.map((group) => `${group.category}: ${group.items.join(', ')}`).join('. ') + '.',
     ],
-    [`What projects has ${p.firstName} built?`, p.featuredProjects.map((project) => `${project.name} (${project.description})`).join(' ')],
+    [
+      `What projects has ${p.firstName} built?`,
+      p.featuredProjects.map((project) => `${project.name} (${project.description})`).join(' '),
+    ],
     [
       `How can I contact ${p.firstName}?`,
       `Email ${p.email}, LinkedIn ${p.socials.linkedin}, or GitHub ${p.socials.github}.`,
@@ -184,13 +196,15 @@ function systemPrompt() {
     '</knowledge_base>',
     '',
     'Key facts to get right:',
-    bullets([
-      `${p.status}. He is a graduate, not a student.`,
-      intern && `Internship: ${intern.role} at ${intern.organization} (${formatPeriod(intern.start, intern.end)}).`,
-      capstone && `Capstone: ${capstone.name} (${capstone.role}).`,
-      qaLauncher && `He built the QA Launcher, a tool that automates logins for QA testing (private repository).`,
-      p.availability,
-    ].filter(Boolean)),
+    bullets(
+      [
+        `${p.status}. He is a graduate, not a student.`,
+        intern && `Internship: ${intern.role} at ${intern.organization} (${formatPeriod(intern.start, intern.end)}).`,
+        capstone && `Capstone: ${capstone.name} (${capstone.role}).`,
+        qaLauncher && `He built the QA Launcher, a tool that automates logins for QA testing (private repository).`,
+        p.availability,
+      ].filter(Boolean)
+    ),
     '',
     'How to answer:',
     bullets([
@@ -226,7 +240,13 @@ async function todoLines() {
     .split('\n')
     .map((line, index) => ({ line: index + 1, text: line }))
     .filter(({ text }) => !/^\s*\*/.test(text) && /\/[/*]\s*TODO:/.test(text))
-    .map(({ line, text }) => `  profile.js:${line}  ${text.slice(text.indexOf('TODO:') + 5).replace(/\*\/.*$/, '').trim()}`);
+    .map(
+      ({ line, text }) =>
+        `  profile.js:${line}  ${text
+          .slice(text.indexOf('TODO:') + 5)
+          .replace(/\*\/.*$/, '')
+          .trim()}`
+    );
 }
 
 const outputs = [
@@ -256,4 +276,6 @@ if (todos.length) {
   console.log(`\n${todos.length} TODO(s) left in profile.js (skipped in the output until filled in):`);
   console.log(todos.join('\n'));
 }
-console.log(`\nPrompt is ~${Math.round(outputs[0][1].length / 4)} tokens (estimate). Restart or redeploy the backend to use it.`);
+console.log(
+  `\nPrompt is ~${Math.round(outputs[0][1].length / 4)} tokens (estimate). Restart or redeploy the backend to use it.`
+);

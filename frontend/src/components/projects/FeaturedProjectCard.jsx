@@ -1,13 +1,17 @@
 import TechList from './TechList'
 import { timeAgo } from './timeAgo'
 
-export const linkClass =
-  'inline-flex items-center gap-1 font-medium text-accent underline-offset-2 hover:underline'
+export const linkClass = 'inline-flex items-center gap-1 font-medium text-accent underline-offset-2 hover:underline'
 
 export function ExternalIcon() {
   return (
     <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 3h7v7M10 14 21 3M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5" />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M14 3h7v7M10 14 21 3M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"
+      />
     </svg>
   )
 }

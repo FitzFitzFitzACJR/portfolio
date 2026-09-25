@@ -1,11 +1,24 @@
 # Deploying to Render
 
-The app deploys as two Render services from the same repo:
+The app deploys as two Render services from the same repo.
+
+## Option A: Blueprint (recommended)
+
+`render.yaml` defines both services. In the Render dashboard: **New → Blueprint** → select the repo → enter the
+secrets it asks for (`ANTHROPIC_API_KEY`, optionally `RESEND_API_KEY`, `GITHUB_TOKEN`) → **Apply**. Then set the URL
+variables below once both services exist, and redeploy the static site. Deploys run only after GitHub Actions
+passes (`autoDeployTrigger: checksPass`). The static site also gets long-lived caching for hashed assets and basic
+security headers.
+
+## Option B: Manual setup
+
 
 | Service | Type | Root directory | Build command | Start / publish |
 |---|---|---|---|---|
 | Backend | Web Service | `backend` | `npm ci` | `npm start` |
 | Frontend | Static Site | `frontend` | `npm ci && npm run build` | publish `dist` |
+
+The backend build can use `npm ci --omit=dev` (test tools aren't needed at runtime).
 
 Node version: `22.x` (see `.nvmrc` and the `engines` field in each `package.json`).
 

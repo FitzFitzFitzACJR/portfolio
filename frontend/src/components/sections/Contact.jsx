@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { sendContactMessage } from '../../api'
+import { openUrl } from '../../lib/navigate'
 import profile from '../../content/profile'
 import Reveal from '../Reveal'
 
@@ -47,7 +48,7 @@ export default function Contact() {
     } catch (err) {
       if (err?.code === 'CONTACT_DISABLED' || err?.code === 'NETWORK') {
         // No mail service available: hand the message to the visitor's email app instead.
-        window.location.href = mailtoHref(fields)
+        openUrl(mailtoHref(fields))
         setStatus({ state: 'fallback', message: 'Opening your email app with your message…' })
       } else if (err?.code === 'RATE_LIMITED' || err?.code === 'INVALID_INPUT') {
         setStatus({ state: 'error', message: err.message })
@@ -99,7 +100,12 @@ export default function Contact() {
           </ul>
         </div>
 
-        <form onSubmit={handleSubmit} noValidate className="card relative space-y-5 p-6" aria-labelledby="contact-title">
+        <form
+          onSubmit={handleSubmit}
+          noValidate
+          className="card relative space-y-5 p-6"
+          aria-labelledby="contact-title"
+        >
           <Field id="contact-name" label="Name" error={errors.name}>
             <input
               id="contact-name"

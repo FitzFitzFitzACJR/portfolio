@@ -3,14 +3,19 @@
   "version": "1.0.0",
   "description": "Full-stack portfolio with AI chatbot assistant",
   "scripts": {
-    "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "install-all": "npm install && npm --prefix frontend install && npm --prefix backend install",
     "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
     "build": "cd frontend && npm run build",
     "start": "cd backend && npm start",
     "kb:export": "node scripts/export-profile.mjs",
     "kb:check": "node scripts/export-profile.mjs --check",
     "resume:build": "node scripts/build-resume.mjs",
-    "assets:build": "node scripts/build-assets.mjs"
+    "assets:build": "node scripts/build-assets.mjs",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm --prefix backend test && npm --prefix frontend test",
+    "check": "npm run lint && npm run format:check && npm run kb:check && npm test && npm run build"
   },
   "keywords": [
     "portfolio",
@@ -22,7 +27,14 @@
   "author": "Arnold Cutad Jr.",
   "license": "MIT",
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "@eslint/js": "^9.39.5",
+    "concurrently": "^8.2.2",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.12.0",
+    "prettier": "^3.9.9"
   },
   "engines": {
     "node": "22.x || 24.x"

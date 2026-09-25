@@ -18,7 +18,10 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUTPUT = path.join(root, 'frontend/public/resume.pdf');
 
 const esc = (value) =>
-  String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  String(value).replace(
+    /[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]
+  );
 const list = (items) => (present(items) ? `<ul>${items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>` : '');
 const bare = (url) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
 
