@@ -1,5 +1,8 @@
+import profile from '../content/profile'
+
+const linkClass = 'text-gray-300 hover:text-white underline-offset-2 hover:underline transition-colors'
+
 const Footer = () => {
-  const githubUrl = import.meta.env.VITE_GITHUB_PROFILE_URL || 'https://github.com/FitzFitzFitz69'
   const currentYear = new Date().getFullYear()
 
   return (
@@ -7,63 +10,55 @@ const Footer = () => {
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>
-            <h3 className="text-xl font-semibold mb-4">Arnold Cutad Jr.</h3>
-            <p className="text-gray-400">
-              IT Student at University of Cebu Main
-            </p>
-            <p className="text-gray-400">
-              Philippines
-            </p>
+            <h2 className="text-xl font-semibold mb-4">{profile.name}</h2>
+            <p className="text-gray-300">{profile.title}</p>
+            <p className="text-gray-300">{profile.location}</p>
           </div>
 
-          <div>
-            <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
+          <nav aria-label="Footer">
+            <h2 className="text-xl font-semibold mb-4">Quick Links</h2>
             <ul className="space-y-2">
               <li>
-                <a
-                  href="#home"
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
+                <a href="#home" className={linkClass}>
                   Home
                 </a>
               </li>
               <li>
-                <a
-                  href="#projects"
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
+                <a href="#projects" className={linkClass}>
                   Projects
                 </a>
               </li>
+            </ul>
+          </nav>
+
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Contact</h2>
+            <ul className="space-y-2">
               <li>
-                <a
-                  href={githubUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
+                <a href={`mailto:${profile.email}`} className={linkClass}>
+                  {profile.email}
+                </a>
+              </li>
+              <li>
+                <a href={profile.socials.linkedin} target="_blank" rel="noopener noreferrer" className={linkClass}>
+                  LinkedIn
+                </a>
+              </li>
+              <li>
+                <a href={profile.socials.github} target="_blank" rel="noopener noreferrer" className={linkClass}>
                   GitHub
                 </a>
               </li>
             </ul>
-          </div>
-
-          <div>
-            <h3 className="text-xl font-semibold mb-4">Contact</h3>
-            <p className="text-gray-400 mb-2">
-              Have a question? Use the AI chatbot assistant!
-            </p>
-            <p className="text-gray-400">
-              Or visit my GitHub profile for more information.
-            </p>
+            <p className="text-gray-300 mt-4">Or ask the AI assistant (bottom-right corner).</p>
           </div>
         </div>
 
-        <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
-          <p>&copy; {currentYear} Arnold Cutad Jr. All rights reserved.</p>
-          <p className="mt-2 text-sm">
-            Built with React, Node.js, and Flowise AI
+        <div className="border-t border-gray-800 pt-8 text-center text-gray-300">
+          <p>
+            &copy; {currentYear} {profile.name.replace(/\.$/, '')}. All rights reserved.
           </p>
+          <p className="mt-2 text-sm">Built with React, Node.js, and Flowise AI</p>
         </div>
       </div>
     </footer>
@@ -71,4 +66,3 @@ const Footer = () => {
 }
 
 export default Footer
-

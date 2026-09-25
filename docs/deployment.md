@@ -38,7 +38,6 @@ Set these in each service's **Environment** tab. Never commit real values.
 | Variable | Example / notes |
 |---|---|
 | `VITE_API_BASE_URL` | `https://your-backend.onrender.com` |
-| `VITE_GITHUB_PROFILE_URL` | `https://github.com/FitzFitzFitz69` |
 
 Vite bakes `VITE_*` values in at **build time**, so redeploy the static site after changing them.
 

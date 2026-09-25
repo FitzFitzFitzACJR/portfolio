@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import { fetchGitHubRepos } from '../api'
+import profile from '../content/profile'
 
 const Projects = () => {
   const [repos, setRepos] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const githubUrl = import.meta.env.VITE_GITHUB_PROFILE_URL || 'https://github.com/FitzFitzFitz69'
+  const githubUrl = profile.socials.github
 
   useEffect(() => {
     const loadRepos = async () => {

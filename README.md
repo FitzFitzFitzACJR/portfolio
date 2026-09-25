@@ -46,7 +46,6 @@ A production-ready full-stack portfolio website with an integrated AI chatbot as
    **Frontend (.env):**
    ```env
    VITE_API_BASE_URL=http://localhost:5000
-   VITE_GITHUB_PROFILE_URL=https://github.com/FitzFitzFitz69
    ```
 
 4. Start development servers:
@@ -115,7 +114,6 @@ FLOWISE_API_KEY=your_api_key_if_required
 ### Frontend (.env)
 
 - `VITE_API_BASE_URL` - Backend API URL (default: http://localhost:5000)
-- `VITE_GITHUB_PROFILE_URL` - GitHub profile URL (optional)
 
 ## Render Deployment
 
@@ -152,7 +150,6 @@ FRONTEND_URL=https://your-frontend.onrender.com
 **Environment Variables:**
 ```env
 VITE_API_BASE_URL=https://your-backend.onrender.com
-VITE_GITHUB_PROFILE_URL=https://github.com/FitzFitzFitz69
 ```
 
 ### Deployment Order

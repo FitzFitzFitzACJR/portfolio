@@ -6,7 +6,9 @@
     "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
     "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
     "build": "cd frontend && npm run build",
-    "start": "cd backend && npm start"
+    "start": "cd backend && npm start",
+    "kb:export": "node scripts/export-knowledge-base.mjs",
+    "kb:check": "node scripts/export-knowledge-base.mjs --check"
   },
   "keywords": [
     "portfolio",
