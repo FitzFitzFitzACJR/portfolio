@@ -2,19 +2,111 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme tokens (RGB channels, consumed by tailwind.config.js). AA contrast is documented in docs/design.md. */
 @layer base {
+  :root {
+    color-scheme: light;
+    --color-canvas: 250 248 249; /* #faf8f9 */
+    --color-surface: 255 255 255; /* #ffffff */
+    --color-surface-2: 244 239 241; /* #f4eff1 */
+    --color-fg: 26 20 24; /* #1a1418 */
+    --color-muted: 74 64 70; /* #4a4046 */
+    --color-subtle: 95 85 91; /* #5f555b */
+    --color-line: 231 221 226; /* #e7dde2 */
+    --color-field: 140 128 136; /* #8c8088, form borders (3:1) */
+    --color-accent: 155 58 90; /* #9b3a5a */
+    --color-accent-bg: 176 64 106; /* #b0406a */
+    --color-accent-soft: 251 232 239; /* #fbe8ef */
+    --color-hero-from: 140 47 82; /* #8c2f52 */
+    --color-hero-to: 94 31 56; /* #5e1f38 */
+  }
+
+  .dark {
+    color-scheme: dark;
+    --color-canvas: 18 16 20; /* #121014 */
+    --color-surface: 27 24 29; /* #1b181d */
+    --color-surface-2: 38 33 42; /* #26212a */
+    --color-fg: 244 239 242; /* #f4eff2 */
+    --color-muted: 207 198 204; /* #cfc6cc */
+    --color-subtle: 170 160 167; /* #aaa0a7 */
+    --color-line: 52 46 56; /* #342e38 */
+    --color-field: 122 111 125; /* #7a6f7d */
+    --color-accent: 244 163 192; /* #f4a3c0 */
+    --color-accent-bg: 176 64 106; /* #b0406a */
+    --color-accent-soft: 58 33 48; /* #3a2130 */
+    --color-hero-from: 61 26 43; /* #3d1a2b */
+    --color-hero-to: 27 15 22; /* #1b0f16 */
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-canvas font-sans text-fg antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display tracking-tight;
+  }
+
+  /* One visible focus style everywhere (keyboard only). */
+  :focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-accent;
+  }
+
+  /* Anchored sections clear the sticky navbar. */
+  section[id] {
+    @apply scroll-mt-nav;
   }
 }
 
-@layer utilities {
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors;
   }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+  .btn-primary {
+    @apply btn bg-accent-bg text-white hover:brightness-90;
+  }
+  .btn-secondary {
+    @apply btn border border-line bg-surface text-fg hover:bg-surface-2;
+  }
+  .link {
+    @apply font-medium text-accent underline-offset-2 hover:underline;
+  }
+  .chip {
+    @apply rounded-md bg-surface-2 px-2 py-1 text-xs font-medium text-fg;
+  }
+  .card {
+    @apply rounded-xl border border-line bg-surface;
+  }
+  .section-title {
+    @apply text-3xl font-bold sm:text-4xl;
+  }
+  .eyebrow {
+    @apply text-sm font-semibold uppercase tracking-widest text-accent;
   }
 }
 
+/* Scroll-in motion. Content is fully visible without JS and under prefers-reduced-motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.6s ease,
+      transform 0.6s ease;
+  }
+  .js [data-reveal='visible'] {
+    opacity: 1;
+    transform: none;
+  }
+}

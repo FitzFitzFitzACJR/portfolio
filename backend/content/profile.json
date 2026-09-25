@@ -1,5 +1,7 @@
 {
   "_generated": "From frontend/src/content/profile.js by `npm run kb:export`. Do not edit by hand.",
+  "name": "Arnold Cutad Jr.",
+  "contactEmail": "cutadalamo@gmail.com",
   "username": "FitzFitzFitzACJR",
   "featuredRepos": [
     "Kurisu21/webeenthere",

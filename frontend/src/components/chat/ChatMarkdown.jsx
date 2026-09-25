@@ -8,7 +8,7 @@ const components = {
       {...props}
       target="_blank"
       rel="noopener noreferrer"
-      className="font-medium text-primary-800 underline underline-offset-2 hover:text-primary-900"
+      className="font-medium text-accent underline underline-offset-2"
     >
       {children}
       <span className="sr-only"> (opens in a new tab)</span>
@@ -21,7 +21,7 @@ const components = {
   h1: ({ node, ...props }) => <p className="mb-2 font-semibold" {...props} />,
   h2: ({ node, ...props }) => <p className="mb-2 font-semibold" {...props} />,
   h3: ({ node, ...props }) => <p className="mb-2 font-semibold" {...props} />,
-  code: ({ node, ...props }) => <code className="rounded bg-gray-200 px-1 py-0.5 font-mono text-[0.85em]" {...props} />,
+  code: ({ node, ...props }) => <code className="rounded bg-surface-2 px-1 py-0.5 font-mono text-[0.85em]" {...props} />,
   pre: ({ node, ...props }) => (
     <pre className="mb-2 overflow-x-auto rounded bg-gray-800 p-3 text-gray-100 [&_code]:bg-transparent [&_code]:p-0" {...props} />
   ),

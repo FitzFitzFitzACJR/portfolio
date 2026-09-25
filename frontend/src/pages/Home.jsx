@@ -1,16 +1,27 @@
-import Hero from '../components/Hero'
+import Navbar from '../components/layout/Navbar'
+import Footer from '../components/layout/Footer'
+import Hero from '../components/sections/Hero'
+import About from '../components/sections/About'
+import Skills from '../components/sections/Skills'
 import Projects from '../components/projects/Projects'
-import Footer from '../components/Footer'
+import Experience from '../components/sections/Experience'
+import Contact from '../components/sections/Contact'
 
 const Home = () => {
   return (
-    <div className="min-h-screen">
-      <Hero />
-      <Projects />
+    <>
+      <Navbar />
+      <main id="main" tabIndex={-1} className="focus:outline-none">
+        <Hero />
+        <About />
+        <Skills />
+        <Projects />
+        <Experience />
+        <Contact />
+      </main>
       <Footer />
-    </div>
+    </>
   )
 }
 
 export default Home
-
