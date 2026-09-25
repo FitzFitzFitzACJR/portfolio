@@ -26,12 +26,10 @@ Set these in each service's **Environment** tab. Never commit real values.
 | `NODE_ENV` | yes | `production` |
 | `PORT` | no | Set by Render automatically. |
 | `FRONTEND_URL` | yes | `https://your-frontend.onrender.com` (comma-separate multiple origins) |
-| `FLOWISE_API_URL` | yes* | `https://cloud.flowiseai.com/api/v1/prediction/<chatflow-id>` |
-| `FLOWISE_CHATFLOW_ID` + `FLOWISE_BASE_URL` | yes* | Alternative to `FLOWISE_API_URL`. Base URL: `https://cloud.flowiseai.com` |
-| `FLOWISE_API_KEY` | if the chatflow requires it | Secret. |
+| `ANTHROPIC_API_KEY` | yes (for the chatbot) | Secret. Without it the site works and the chatbot shows as offline. |
+| `ANTHROPIC_MODEL` | no | Defaults to `claude-haiku-4-5`. |
+| `CHAT_DAILY_LIMIT` | no | Global chat messages per UTC day. Default 300, `0` = off. |
 | `GITHUB_PROFILE_URL` | yes | `https://github.com/FitzFitzFitz69` |
-
-\* Provide either `FLOWISE_API_URL`, or `FLOWISE_CHATFLOW_ID` + `FLOWISE_BASE_URL`.
 
 ### Frontend (Static Site)
 
@@ -55,7 +53,7 @@ Vite bakes `VITE_*` values in at **build time**, so redeploy the static site aft
 |---|---|
 | Backend won't start | Build logs; Node version; env vars present. |
 | CORS errors | `FRONTEND_URL` exactly matches the frontend origin (scheme + host, no trailing slash). |
-| Chatbot errors | See [flowise-setup.md](./flowise-setup.md#4-troubleshooting). |
+| Chatbot errors | See [assistant.md](./assistant.md#4-troubleshooting). |
 | Frontend calls the wrong API | `VITE_API_BASE_URL` set and the static site rebuilt after setting it. |
 | Slow first response | Free Web Services spin down after inactivity; upgrade for always-on. |
 

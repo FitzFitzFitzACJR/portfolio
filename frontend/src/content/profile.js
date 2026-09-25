@@ -2,8 +2,8 @@
  * Single source of truth for everything the site (and the AI assistant) says about Arnold.
  *
  * - Every component reads from this file; don't hardcode personal facts anywhere else.
- * - `npm run kb:export` turns it into docs/flowise-knowledge-base.md and
- *   docs/flowise-system-prompt.txt. Re-run it and re-upload to Flowise after editing.
+ * - `npm run kb:export` turns it into the AI assistant's system prompt
+ *   (backend/assistant/system-prompt.md). Re-run it and redeploy the backend after editing.
  * - Plain data only (no import.meta / browser APIs) so Node scripts can import it.
  * - `null` means "not provided yet": the UI and the knowledge base skip it.
  *   Lines marked `// TODO:` are listed by `npm run kb:export`.
@@ -156,15 +156,15 @@ const profile = {
       repo: { owner: GITHUB_USERNAME, name: 'portfolio', url: github('portfolio') },
       liveUrl: null, // TODO: same as siteUrl once deployed
       image: null,
-      description: "This portfolio site: React + Express with an AI assistant, powered by Flowise, that answers visitors' questions about Arnold's experience and projects.",
+      description: "This portfolio site: React + Express with an AI assistant, powered by Claude, that answers visitors' questions about Arnold's experience and projects.",
       problem: null,
       contribution: ['Designed, built and deployed the frontend, backend and AI integration.'],
       built: [
-        'Streaming AI assistant (Server-Sent Events) backed by a Flowise chatflow, with per-visitor memory.',
+        'Streaming AI assistant (Server-Sent Events) powered by Claude Haiku 4.5 through the Anthropic API, with short conversation memory.',
         'Hardened Express API: CORS allow-list, rate limiting, input validation and friendly error codes.',
-        'Content kept in one profile file that also generates the assistant’s knowledge base.',
+        'Content kept in one profile file that also generates the assistant’s system prompt.',
       ],
-      tech: ['React', 'Vite', 'Tailwind CSS', 'Node.js', 'Express', 'Flowise AI', 'Render'],
+      tech: ['React', 'Vite', 'Tailwind CSS', 'Node.js', 'Express', 'Claude API', 'Render'],
       outcome: null,
     },
     {

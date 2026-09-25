@@ -58,7 +58,7 @@ const Footer = () => {
           <p>
             &copy; {currentYear} {profile.name.replace(/\.$/, '')}. All rights reserved.
           </p>
-          <p className="mt-2 text-sm">Built with React, Node.js, and Flowise AI</p>
+          <p className="mt-2 text-sm">Built with React, Node.js, and the Claude API</p>
         </div>
       </div>
     </footer>

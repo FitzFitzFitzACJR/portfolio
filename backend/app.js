@@ -3,8 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import createChatRouter from './routes/chat.js';
 import githubRoutes from './routes/github.js';
-import { resolveFlowiseConfig } from './config/flowise.js';
-import { createFlowiseClient } from './services/flowise.js';
+import { resolveAssistantConfig } from './config/assistant.js';
+import { createAssistantClient } from './services/assistant.js';
 
 const DEV_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:4173', 'http://127.0.0.1:4173'];
 
@@ -22,13 +22,13 @@ export function resolveAllowedOrigins(env = process.env) {
  * Build the Express app. Dependencies are injectable for tests.
  * @param {object} [options]
  * @param {NodeJS.ProcessEnv} [options.env]
- * @param {object} [options.flowiseConfig] - defaults to resolveFlowiseConfig(env)
- * @param {object} [options.flowiseClient] - defaults to a real client when enabled
+ * @param {object} [options.assistantConfig] - defaults to resolveAssistantConfig(env)
+ * @param {object} [options.assistantClient] - defaults to a real Claude client when enabled
  * @param {object} [options.rateLimit] - { windowMs, limit } override for chat routes
  */
-export function createApp({ env = process.env, flowiseConfig, flowiseClient, rateLimit } = {}) {
-  const config = flowiseConfig ?? resolveFlowiseConfig(env);
-  const client = flowiseClient ?? (config.enabled ? createFlowiseClient(config) : null);
+export function createApp({ env = process.env, assistantConfig, assistantClient, rateLimit } = {}) {
+  const config = assistantConfig ?? resolveAssistantConfig(env);
+  const client = assistantClient ?? (config.enabled ? createAssistantClient(config) : null);
   const allowedOrigins = resolveAllowedOrigins(env);
   const allowAnyOrigin = allowedOrigins.has('*');
 
@@ -54,7 +54,8 @@ export function createApp({ env = process.env, flowiseConfig, flowiseClient, rat
     })
   );
 
-  app.use(express.json({ limit: '10kb' }));
+  // Room for a message plus a short, capped conversation history (see routes/chat.js).
+  app.use(express.json({ limit: '32kb' }));
 
   app.get('/health', (req, res) => {
     res.set('Cache-Control', 'no-store').json({
