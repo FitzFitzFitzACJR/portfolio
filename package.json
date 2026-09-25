@@ -9,7 +9,8 @@
     "start": "cd backend && npm start",
     "kb:export": "node scripts/export-profile.mjs",
     "kb:check": "node scripts/export-profile.mjs --check",
-    "resume:build": "node scripts/build-resume.mjs"
+    "resume:build": "node scripts/build-resume.mjs",
+    "assets:build": "node scripts/build-assets.mjs"
   },
   "keywords": [
     "portfolio",

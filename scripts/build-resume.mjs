@@ -8,28 +8,14 @@
  * (set CHROME_PATH to use a specific browser). Contact details are limited to what the public
  * site already shows: no phone number or street address.
  */
-import { execFileSync } from 'node:child_process';
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
+import { renderHtml } from './lib/browser.mjs';
 import profile from '../frontend/src/content/profile.js';
 import { formatPeriod, present } from '../frontend/src/content/format.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUTPUT = path.join(root, 'frontend/public/resume.pdf');
-
-const BROWSERS = [
-  process.env.CHROME_PATH,
-  'C:/Program Files/Google/Chrome/Application/chrome.exe',
-  'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
-  'C:/Program Files/Microsoft/Edge/Application/msedge.exe',
-  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-  '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
-  '/usr/bin/google-chrome',
-  '/usr/bin/chromium',
-  '/usr/bin/chromium-browser',
-].filter(Boolean);
 
 const esc = (value) =>
   String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -128,29 +114,5 @@ function html() {
 </body></html>`;
 }
 
-const browser = BROWSERS.find((candidate) => existsSync(candidate));
-if (!browser) {
-  console.error('No Chrome/Edge found. Install one or set CHROME_PATH to a Chromium-based browser.');
-  process.exit(1);
-}
-
-const workDir = mkdtempSync(path.join(tmpdir(), 'resume-'));
-const htmlPath = path.join(workDir, 'resume.html');
-try {
-  writeFileSync(htmlPath, html(), 'utf8');
-  execFileSync(
-    browser,
-    [
-      '--headless=new',
-      '--disable-gpu',
-      '--no-pdf-header-footer',
-      `--user-data-dir=${path.join(workDir, 'profile')}`,
-      `--print-to-pdf=${OUTPUT}`,
-      pathToFileURL(htmlPath).href,
-    ],
-    { stdio: 'ignore', timeout: 60_000 }
-  );
-  console.log(`Wrote ${path.relative(root, OUTPUT)} using ${path.basename(browser)}`);
-} finally {
-  rmSync(workDir, { recursive: true, force: true });
-}
+const browserName = renderHtml(html(), ['--no-pdf-header-footer', `--print-to-pdf=${OUTPUT}`]);
+console.log(`Wrote ${path.relative(root, OUTPUT)} using ${browserName}`);

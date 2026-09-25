@@ -4,9 +4,11 @@ import { openChat } from '../chat/openChat'
 export default function Hero() {
   return (
     <section id="home" className="relative overflow-hidden bg-gradient-to-br from-hero-from to-hero-to text-white">
-      {/* Decorative glow in the original brand pink. */}
-      <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-brand/25 blur-3xl" />
-      <div aria-hidden="true" className="pointer-events-none absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-brand/15 blur-3xl" />
+      {/* Decorative glow in the original brand pink (radial gradients: far cheaper to paint than blur filters). */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_88%_8%,rgb(247_180_198/0.30),transparent_42%),radial-gradient(circle_at_6%_100%,rgb(247_180_198/0.18),transparent_38%)]"
+      />
 
       <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-20 md:grid-cols-[1fr_auto] md:py-28">
         <div className="order-2 text-center md:order-1 md:text-left">
@@ -48,7 +50,7 @@ export default function Hero() {
             width={profile.avatar.width}
             height={profile.avatar.height}
             alt={profile.avatar.alt}
-            fetchPriority="high"
+            fetchpriority="high"
             className="h-40 w-40 rounded-full object-cover shadow-2xl ring-4 ring-white/25 md:h-60 md:w-60"
           />
         </div>
