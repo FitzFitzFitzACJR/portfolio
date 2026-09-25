@@ -45,7 +45,9 @@ function seo({ siteUrl, apiUrl }) {
     },
     transformIndexHtml(html) {
       const values = { PROFILE_TITLE: title, PROFILE_DESCRIPTION: description }
-      const filled = html.replace(/%(PROFILE_[A-Z_]+)%/g, (match, key) => (key in values ? escapeHtml(values[key]) : match))
+      const filled = html.replace(/%(PROFILE_[A-Z_]+)%/g, (match, key) =>
+        key in values ? escapeHtml(values[key]) : match
+      )
       const tags = [
         meta('name', 'author', profile.name),
         siteUrl && { tag: 'link', attrs: { rel: 'canonical', href: `${siteUrl}/` }, injectTo: 'head' },
@@ -76,7 +78,9 @@ function seo({ siteUrl, apiUrl }) {
       return { html: filled, tags }
     },
     generateBundle() {
-      const robots = ['User-agent: *', 'Allow: /', siteUrl && `Sitemap: ${siteUrl}/sitemap.xml`, ''].filter((l) => l !== false && l !== null && l !== undefined)
+      const robots = ['User-agent: *', 'Allow: /', siteUrl && `Sitemap: ${siteUrl}/sitemap.xml`, ''].filter(
+        (l) => l !== false && l !== null && l !== undefined
+      )
       this.emitFile({ type: 'asset', fileName: 'robots.txt', source: robots.join('\n') })
       if (siteUrl) {
         const today = new Date().toISOString().slice(0, 10)

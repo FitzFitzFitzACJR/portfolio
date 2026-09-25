@@ -40,7 +40,9 @@ export function resolveMailerConfig(env = process.env) {
 }
 
 export function describeMailerConfig(config) {
-  return config.enabled ? `Contact form: enabled (to ${config.to})` : `Contact form: DISABLED – ${config.reason} (visitors get a mailto: fallback)`;
+  return config.enabled
+    ? `Contact form: enabled (to ${config.to})`
+    : `Contact form: DISABLED – ${config.reason} (visitors get a mailto: fallback)`;
 }
 
 export function createResendMailer(config, { fetchImpl = fetch } = {}) {

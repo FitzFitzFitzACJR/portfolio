@@ -64,7 +64,9 @@ export default function Projects() {
             <FeaturedProjectCard
               key={project.slug}
               project={project}
-              meta={project.team && project.repo ? externalMeta.get(repoKey(project.repo.owner, project.repo.name)) : null}
+              meta={
+                project.team && project.repo ? externalMeta.get(repoKey(project.repo.owner, project.repo.name)) : null
+              }
               onOpenCaseStudy={openCaseStudy}
             />
           ))}

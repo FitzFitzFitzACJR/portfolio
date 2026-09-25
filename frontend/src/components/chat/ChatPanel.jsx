@@ -1,13 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import profile from '../../content/profile';
-import { sendChatMessage, streamChatMessage } from '../../api';
-import ChatMarkdown from './ChatMarkdown';
-import StatusDot from './StatusDot';
-import useFocusTrap from './useFocusTrap';
-import { clearMessages, createMessageId, loadMessages, saveMessages } from './chatSession';
+import { useCallback, useEffect, useRef, useState } from 'react'
+import profile from '../../content/profile'
+import { sendChatMessage, streamChatMessage } from '../../api'
+import ChatMarkdown from './ChatMarkdown'
+import StatusDot from './StatusDot'
+import useFocusTrap from './useFocusTrap'
+import { clearMessages, createMessageId, loadMessages, saveMessages } from './chatSession'
 
-const MAX_LENGTH = 1000;
-const HISTORY_TURNS = 10; // must match MAX_HISTORY_MESSAGES in backend/routes/chat.js
+const MAX_LENGTH = 1000
+const HISTORY_TURNS = 10 // must match MAX_HISTORY_MESSAGES in backend/routes/chat.js
 
 const ERROR_MESSAGES = {
   CHAT_DISABLED: `The assistant is offline right now. You can reach ${profile.firstName} at ${profile.email}.`,
@@ -17,17 +17,17 @@ const ERROR_MESSAGES = {
   UPSTREAM_ERROR: 'The assistant hit a snag. Please try again in a moment.',
   INVALID_INPUT: `That message couldn't be sent. Messages must be under ${MAX_LENGTH.toLocaleString()} characters.`,
   NETWORK: "Can't reach the assistant. Check your connection and try again.",
-};
-const errorMessage = (code) => ERROR_MESSAGES[code] ?? ERROR_MESSAGES.UPSTREAM_ERROR;
+}
+const errorMessage = (code) => ERROR_MESSAGES[code] ?? ERROR_MESSAGES.UPSTREAM_ERROR
 
-const greetingMessage = () => ({ id: 'greeting', role: 'assistant', content: profile.assistant.greeting });
+const greetingMessage = () => ({ id: 'greeting', role: 'assistant', content: profile.assistant.greeting })
 
 /** Completed turns to send as context (the backend is stateless). Skips the greeting and failed replies. */
 const toHistory = (messages) =>
   messages
     .filter((m) => m.id !== 'greeting' && !m.pending && !m.error && m.content.trim())
     .slice(-HISTORY_TURNS)
-    .map(({ role, content }) => ({ role, content }));
+    .map(({ role, content }) => ({ role, content }))
 
 const STATUS_LABEL = {
   checking: 'Connecting…',
@@ -35,105 +35,105 @@ const STATUS_LABEL = {
   online: 'Online',
   offline: 'Offline',
   unreachable: 'Unavailable',
-};
+}
 
 export default function ChatPanel({ open, status, onRetry, onClose }) {
-  const [messages, setMessages] = useState(() => loadMessages() ?? [greetingMessage()]);
-  const [input, setInput] = useState('');
-  const [busy, setBusy] = useState(false);
-  const abortRef = useRef(null);
-  const panelRef = useRef(null);
-  const listRef = useRef(null);
-  const inputRef = useRef(null);
-  const closeRef = useRef(null);
+  const [messages, setMessages] = useState(() => loadMessages() ?? [greetingMessage()])
+  const [input, setInput] = useState('')
+  const [busy, setBusy] = useState(false)
+  const abortRef = useRef(null)
+  const panelRef = useRef(null)
+  const listRef = useRef(null)
+  const inputRef = useRef(null)
+  const closeRef = useRef(null)
 
-  const canChat = status === 'online';
-  const showComposer = status !== 'offline' && status !== 'unreachable';
+  const canChat = status === 'online'
+  const showComposer = status !== 'offline' && status !== 'unreachable'
 
-  useFocusTrap(panelRef, open, onClose);
-
-  useEffect(() => {
-    if (!open) return;
-    (showComposer ? inputRef.current : closeRef.current)?.focus();
-  }, [open, showComposer]);
-
-  useEffect(() => saveMessages(messages), [messages]);
+  useFocusTrap(panelRef, open, onClose)
 
   useEffect(() => {
-    const el = listRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [messages, open]);
+    if (!open) return
+    ;(showComposer ? inputRef.current : closeRef.current)?.focus()
+  }, [open, showComposer])
 
-  useEffect(() => () => abortRef.current?.abort(), []);
+  useEffect(() => saveMessages(messages), [messages])
 
-  const patch = (id, update) => setMessages((all) => all.map((m) => (m.id === id ? { ...m, ...update(m) } : m)));
+  useEffect(() => {
+    const el = listRef.current
+    if (el) el.scrollTop = el.scrollHeight
+  }, [messages, open])
+
+  useEffect(() => () => abortRef.current?.abort(), [])
+
+  const patch = (id, update) => setMessages((all) => all.map((m) => (m.id === id ? { ...m, ...update(m) } : m)))
 
   const send = useCallback(
     async (rawText) => {
-      const text = rawText.trim();
-      if (!text || busy || !canChat) return;
+      const text = rawText.trim()
+      if (!text || busy || !canChat) return
 
-      const replyId = createMessageId();
-      const history = toHistory(messages);
+      const replyId = createMessageId()
+      const history = toHistory(messages)
       setMessages((all) => [
         ...all,
         { id: createMessageId(), role: 'user', content: text },
         { id: replyId, role: 'assistant', content: '', pending: true },
-      ]);
-      setInput('');
-      setBusy(true);
+      ])
+      setInput('')
+      setBusy(true)
 
-      const controller = new AbortController();
-      abortRef.current = controller;
-      const request = { message: text, history, signal: controller.signal };
-      const append = (chunk) => patch(replyId, (m) => ({ content: m.content + chunk }));
+      const controller = new AbortController()
+      abortRef.current = controller
+      const request = { message: text, history, signal: controller.signal }
+      const append = (chunk) => patch(replyId, (m) => ({ content: m.content + chunk }))
 
       try {
         try {
-          await streamChatMessage({ ...request, onToken: append });
+          await streamChatMessage({ ...request, onToken: append })
         } catch (err) {
-          if (!err?.fallback) throw err;
-          append(await sendChatMessage(request)); // streaming unavailable: use the plain endpoint
+          if (!err?.fallback) throw err
+          append(await sendChatMessage(request)) // streaming unavailable: use the plain endpoint
         }
-        patch(replyId, () => ({ pending: false }));
+        patch(replyId, () => ({ pending: false }))
       } catch (err) {
-        if (controller.signal.aborted) patch(replyId, () => ({ pending: false, stopped: true }));
-        else patch(replyId, () => ({ pending: false, error: err?.code ?? 'NETWORK' }));
+        if (controller.signal.aborted) patch(replyId, () => ({ pending: false, stopped: true }))
+        else patch(replyId, () => ({ pending: false, error: err?.code ?? 'NETWORK' }))
       } finally {
-        if (abortRef.current === controller) abortRef.current = null;
-        setBusy(false);
+        if (abortRef.current === controller) abortRef.current = null
+        setBusy(false)
         // The Stop button unmounts here; don't leave keyboard focus on <body>.
         requestAnimationFrame(() => {
-          if (!panelRef.current?.contains(document.activeElement)) inputRef.current?.focus();
-        });
+          if (!panelRef.current?.contains(document.activeElement)) inputRef.current?.focus()
+        })
       }
     },
     [busy, canChat, messages]
-  );
+  )
 
-  const stop = () => abortRef.current?.abort();
+  const stop = () => abortRef.current?.abort()
 
   const newChat = () => {
-    abortRef.current?.abort();
-    clearMessages();
-    setMessages([greetingMessage()]);
-    setInput('');
-    inputRef.current?.focus();
-  };
+    abortRef.current?.abort()
+    clearMessages()
+    setMessages([greetingMessage()])
+    setInput('')
+    inputRef.current?.focus()
+  }
 
   const handleSubmit = (event) => {
-    event.preventDefault();
-    send(input);
-  };
+    event.preventDefault()
+    send(input)
+  }
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
-      event.preventDefault();
-      send(input);
+      event.preventDefault()
+      send(input)
     }
-  };
+  }
 
-  const showSuggestions = canChat && !busy && messages.length === 1;
+  const showSuggestions = canChat && !busy && messages.length === 1
 
   return (
     <div
@@ -142,7 +142,10 @@ export default function ChatPanel({ open, status, onRetry, onClose }) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="chat-title"
-      className={`${open ? 'flex' : 'hidden'} fixed inset-0 z-50 flex-col bg-surface text-fg sm:inset-auto sm:bottom-24 sm:right-6 sm:h-[min(600px,calc(100dvh-8rem))] sm:w-[400px] sm:overflow-hidden sm:rounded-2xl sm:border sm:border-line sm:shadow-2xl`}
+      // `hidden` removes the closed panel from the accessibility tree; `flex` only when open, since
+      // Tailwind's .flex would otherwise override the [hidden] rule.
+      hidden={!open}
+      className={`${open ? 'flex' : ''} fixed inset-0 z-50 flex-col bg-surface text-fg sm:inset-auto sm:bottom-24 sm:right-6 sm:h-[min(600px,calc(100dvh-8rem))] sm:w-[400px] sm:overflow-hidden sm:rounded-2xl sm:border sm:border-line sm:shadow-2xl`}
     >
       {/* Header */}
       <div className="flex items-center gap-3 bg-hero-from px-4 py-3 text-white">
@@ -214,7 +217,9 @@ export default function ChatPanel({ open, status, onRetry, onClose }) {
 
       {status === 'unreachable' && (
         <Notice>
-          <p className="mb-2">Couldn&apos;t reach the assistant. You can try again or contact {profile.firstName} directly:</p>
+          <p className="mb-2">
+            Couldn&apos;t reach the assistant. You can try again or contact {profile.firstName} directly:
+          </p>
           <div className="flex flex-wrap items-center gap-3">
             <button
               type="button"
@@ -298,11 +303,11 @@ export default function ChatPanel({ open, status, onRetry, onClose }) {
         </form>
       )}
     </div>
-  );
+  )
 }
 
 function Message({ message }) {
-  const isUser = message.role === 'user';
+  const isUser = message.role === 'user'
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
       <div
@@ -320,13 +325,15 @@ function Message({ message }) {
         )}
         {message.stopped && <p className="mt-1 text-xs italic text-subtle">Stopped.</p>}
         {message.error && (
-          <p className={`text-red-700 dark:text-red-300 ${message.content ? 'mt-2 border-t border-line pt-2 text-xs' : ''}`}>
+          <p
+            className={`text-red-700 dark:text-red-300 ${message.content ? 'mt-2 border-t border-line pt-2 text-xs' : ''}`}
+          >
             {errorMessage(message.error)}
           </p>
         )}
       </div>
     </div>
-  );
+  )
 }
 
 function TypingDots() {
@@ -342,16 +349,15 @@ function TypingDots() {
         />
       ))}
     </span>
-  );
+  )
 }
 
 function Notice({ children }) {
-  return <div className="mx-4 mb-3 rounded-lg border border-line bg-surface-2 p-3 text-sm text-fg">{children}</div>;
+  return <div className="mx-4 mb-3 rounded-lg border border-line bg-surface-2 p-3 text-sm text-fg">{children}</div>
 }
 
 function ContactLinks() {
-  const link =
-    'font-medium text-accent underline underline-offset-2  ';
+  const link = 'font-medium text-accent underline underline-offset-2  '
   return (
     <span className="flex flex-wrap gap-x-4 gap-y-1">
       <a className={link} href={`mailto:${profile.email}`}>
@@ -364,5 +370,5 @@ function ContactLinks() {
         GitHub
       </a>
     </span>
-  );
+  )
 }

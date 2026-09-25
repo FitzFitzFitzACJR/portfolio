@@ -1,0 +1,56 @@
+# Render Blueprint: backend API (Web Service) + frontend (Static Site).
+# New > Blueprint in the Render dashboard, pick this repo. Secrets marked `sync: false` are asked for
+# on first creation; set FRONTEND_URL / VITE_API_BASE_URL / VITE_SITE_URL to the real URLs once known.
+# Deploys wait for GitHub checks (CI) to pass.
+services:
+  - name: portfolio-api
+    type: web
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: FRONTEND_URL # e.g. https://portfolio-site.onrender.com (comma-separate several)
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: CHAT_DAILY_LIMIT
+        value: '300'
+      - key: RESEND_API_KEY # optional: contact form email
+        sync: false
+      - key: GITHUB_TOKEN # optional: higher GitHub API limit
+        sync: false
+
+  - name: portfolio-site
+    type: web
+    runtime: static
+    buildCommand: cd frontend && npm ci && npm run build
+    staticPublishPath: frontend/dist
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: VITE_API_BASE_URL # e.g. https://portfolio-api.onrender.com
+        sync: false
+      - key: VITE_SITE_URL # this site's own public URL
+        sync: false
+    headers:
+      # Hashed build assets never change: cache for a year.
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Permissions-Policy
+        value: camera=(), microphone=(), geolocation=()

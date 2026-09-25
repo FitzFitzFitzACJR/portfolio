@@ -86,8 +86,7 @@ export default function createChatRouter({ config, client, rateLimit: limits = {
     handler: (req, res) => sendError(res, 429, 'RATE_LIMITED'),
   });
 
-  const requireEnabled = (req, res, next) =>
-    config.enabled ? next() : sendError(res, 503, 'CHAT_DISABLED');
+  const requireEnabled = (req, res, next) => (config.enabled ? next() : sendError(res, 503, 'CHAT_DISABLED'));
 
   const validate = (req, res, next) => {
     const { message, history } = req.body ?? {};
@@ -160,7 +159,8 @@ export default function createChatRouter({ config, client, rateLimit: limits = {
     } catch (err) {
       if (!(err instanceof ChatError && err.code === 'ABORTED')) {
         logChatError('/api/chat/stream', err);
-        const code = err instanceof ChatError && err.code === 'UPSTREAM_TIMEOUT' ? 'UPSTREAM_TIMEOUT' : 'UPSTREAM_ERROR';
+        const code =
+          err instanceof ChatError && err.code === 'UPSTREAM_TIMEOUT' ? 'UPSTREAM_TIMEOUT' : 'UPSTREAM_ERROR';
         send('error', { code, error: PUBLIC_MESSAGES[code] });
       }
     } finally {

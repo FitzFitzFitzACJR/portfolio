@@ -14,7 +14,8 @@ export function validateContact(body = {}) {
   const message = typeof body.message === 'string' ? body.message.trim() : '';
 
   if (!name || name.length > LIMITS.name) return { error: `Please enter your name (up to ${LIMITS.name} characters).` };
-  if (!EMAIL_PATTERN.test(email) || email.length > LIMITS.email) return { error: 'Please enter a valid email address.' };
+  if (!EMAIL_PATTERN.test(email) || email.length > LIMITS.email)
+    return { error: 'Please enter a valid email address.' };
   if (message.length < LIMITS.messageMin || message.length > LIMITS.messageMax) {
     return { error: `Please write a message between ${LIMITS.messageMin} and ${LIMITS.messageMax} characters.` };
   }
@@ -36,7 +37,12 @@ export default function createContactRouter({ config, mailer, rateLimit: limits 
     standardHeaders: 'draft-7',
     legacyHeaders: false,
     handler: (req, res) =>
-      sendError(res, 429, 'RATE_LIMITED', 'Too many messages from your network. Please try again later or email directly.'),
+      sendError(
+        res,
+        429,
+        'RATE_LIMITED',
+        'Too many messages from your network. Please try again later or email directly.'
+      ),
   });
 
   router.get('/contact/status', (req, res) => {

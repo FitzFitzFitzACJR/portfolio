@@ -84,9 +84,7 @@ export default function CaseStudyDialog({ project, onClose }) {
           )}
 
           {project.team && project.repo && (
-            <p className="text-sm text-subtle">
-              Team project. The repository is owned by {project.repo.owner}.
-            </p>
+            <p className="text-sm text-subtle">Team project. The repository is owned by {project.repo.owner}.</p>
           )}
         </div>
 

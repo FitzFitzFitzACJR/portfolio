@@ -1,11 +1,11 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import StatusDot from './StatusDot';
-import useAssistantStatus from './useAssistantStatus';
-import { OPEN_CHAT_EVENT } from './openChat';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import StatusDot from './StatusDot'
+import useAssistantStatus from './useAssistantStatus'
+import { OPEN_CHAT_EVENT } from './openChat'
 
 // The panel (and react-markdown) is only downloaded when first needed.
-const loadPanel = () => import('./ChatPanel');
-const ChatPanel = lazy(loadPanel);
+const loadPanel = () => import('./ChatPanel')
+const ChatPanel = lazy(loadPanel)
 
 const LAUNCHER_LABEL = {
   checking: 'Open AI assistant',
@@ -13,39 +13,39 @@ const LAUNCHER_LABEL = {
   online: 'Open AI assistant',
   offline: 'Open AI assistant (offline)',
   unreachable: 'Open AI assistant (unavailable)',
-};
+}
 
 export default function ChatLauncher() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
   // Keep the panel mounted after first open so a reply keeps streaming while it's closed.
-  const [mounted, setMounted] = useState(false);
-  const { status, retry } = useAssistantStatus();
-  const buttonRef = useRef(null);
-  const wasOpen = useRef(false);
+  const [mounted, setMounted] = useState(false)
+  const { status, retry } = useAssistantStatus()
+  const buttonRef = useRef(null)
+  const wasOpen = useRef(false)
 
   useEffect(() => {
-    if (wasOpen.current && !open) buttonRef.current?.focus();
-    wasOpen.current = open;
-  }, [open]);
+    if (wasOpen.current && !open) buttonRef.current?.focus()
+    wasOpen.current = open
+  }, [open])
 
   const show = () => {
-    setMounted(true);
-    if (status === 'unreachable') retry();
-    setOpen(true);
-  };
-  const toggle = () => (open ? setOpen(false) : show());
+    setMounted(true)
+    if (status === 'unreachable') retry()
+    setOpen(true)
+  }
+  const toggle = () => (open ? setOpen(false) : show())
 
   // Other components (e.g. the hero's "Ask my AI assistant") open the panel via openChat().
-  const showRef = useRef(show);
-  showRef.current = show;
+  const showRef = useRef(show)
+  showRef.current = show
   useEffect(() => {
     const onOpen = () => {
-      loadPanel();
-      showRef.current();
-    };
-    window.addEventListener(OPEN_CHAT_EVENT, onOpen);
-    return () => window.removeEventListener(OPEN_CHAT_EVENT, onOpen);
-  }, []);
+      loadPanel()
+      showRef.current()
+    }
+    window.addEventListener(OPEN_CHAT_EVENT, onOpen)
+    return () => window.removeEventListener(OPEN_CHAT_EVENT, onOpen)
+  }, [])
 
   return (
     <>
@@ -75,7 +75,7 @@ export default function ChatLauncher() {
             />
           </svg>
         )}
-        <span className="absolute right-0.5 top-0.5 rounded-full ring-2 ring-white">
+        <span className="absolute right-0.5 top-0.5 flex rounded-full ring-2 ring-white">
           <StatusDot status={status} />
         </span>
       </button>
@@ -86,7 +86,7 @@ export default function ChatLauncher() {
         </Suspense>
       )}
     </>
-  );
+  )
 }
 
 function PanelLoading() {
@@ -97,5 +97,5 @@ function PanelLoading() {
     >
       Loading assistant…
     </div>
-  );
+  )
 }
