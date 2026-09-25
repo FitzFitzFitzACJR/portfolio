@@ -38,6 +38,7 @@ Set these in each service's **Environment** tab. Never commit real values.
 | Variable | Example / notes |
 |---|---|
 | `VITE_API_BASE_URL` | `https://your-backend.onrender.com` |
+| `VITE_SITE_URL` | `https://your-frontend.onrender.com` (the site's own public URL). Enables the canonical URL, social preview image/URL and `sitemap.xml`. |
 
 Vite bakes `VITE_*` values in at **build time**, so redeploy the static site after changing them.
 
@@ -58,6 +59,13 @@ Vite bakes `VITE_*` values in at **build time**, so redeploy the static site aft
 | Chatbot errors | See [assistant.md](./assistant.md#4-troubleshooting). |
 | Frontend calls the wrong API | `VITE_API_BASE_URL` set and the static site rebuilt after setting it. |
 | Slow first response | Free Web Services spin down after inactivity; upgrade for always-on. |
+
+## Performance & SEO checks
+
+After deploying, measure the live site with [PageSpeed Insights](https://pagespeed.web.dev/) (mobile) and check the
+social preview with a link-preview tool such as the [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/).
+Local Lighthouse (mobile, production build via `vite preview`, 2026-09-25): Performance 97–98, Accessibility 100,
+Best Practices 100, SEO 100 (FCP 1.6 s, LCP 2.2 s, TBT 40–60 ms, CLS 0).
 
 ## Custom domains
 

@@ -9,6 +9,7 @@ node_modules/
 # Build outputs
 frontend/dist/
 frontend/build/
+frontend/dist-ssr/
 
 # IDE
 .vscode/

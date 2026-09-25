@@ -15,6 +15,7 @@ A production-ready full-stack portfolio website with an integrated AI chatbot as
   (case studies) → More on GitHub (live) → Experience & Education timeline → Contact → Footer
 - AI assistant (Claude Haiku 4.5) that answers questions about Arnold, streamed in real time
 - Contact form (Resend) with a `mailto:` fallback when email sending isn't configured
+- SEO: prerendered HTML, Open Graph/Twitter cards, JSON-LD `Person`, `robots.txt`/`sitemap.xml`, favicon set
 - Light/dark theme (follows the OS, remembers your choice), WCAG AA colors (see [docs/design.md](./docs/design.md))
 - All personal content in one file: `frontend/src/content/profile.js`, which also generates the
   assistant's knowledge base (`npm run kb:export`) and the résumé PDF (`npm run resume:build`)
@@ -79,6 +80,7 @@ Setup, cost controls and troubleshooting: **[docs/assistant.md](./docs/assistant
 ### Frontend (.env)
 
 - `VITE_API_BASE_URL` - Backend API URL (default: http://localhost:5000)
+- `VITE_SITE_URL` - Public site URL; enables canonical URL, Open Graph/Twitter image and URL, and `sitemap.xml`
 
 ## Render Deployment
 
@@ -224,6 +226,7 @@ and with nothing cached the endpoint returns `503 GITHUB_UNAVAILABLE` (featured 
 - `npm start` - Start backend server
 - `npm run kb:export` - Regenerate the assistant prompt and backend profile data from `profile.js` (`kb:check` verifies)
 - `npm run resume:build` - Regenerate `frontend/public/resume.pdf` from `profile.js` (needs Chrome or Edge)
+- `npm run assets:build` - Regenerate favicons/app icons (from `favicon.svg`) and the 1200×630 social image (needs Chrome or Edge)
 
 ## License
 

@@ -43,7 +43,7 @@ export default function Navbar() {
     }`
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line/80 bg-canvas/85 backdrop-blur supports-[backdrop-filter]:bg-canvas/70">
+    <header className="sticky top-0 z-30 border-b border-line/80 bg-canvas/95">
       <nav aria-label="Main" className="mx-auto flex h-16 max-w-6xl items-center gap-2 px-4">
         <a href="#home" className="mr-auto font-display text-lg font-bold text-fg">
           {profile.name}
