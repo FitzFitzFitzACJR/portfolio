@@ -5,7 +5,7 @@
  * the frontend; it reads these generated, committed files instead:
  *
  *   backend/assistant/system-prompt.md   AI assistant instructions + knowledge base
- *   backend/content/github.json          GitHub username, featured/hidden/external repos
+ *   backend/content/profile.json         contact email, GitHub username, featured/hidden/external repos
  *
  *   npm run kb:export   write both files
  *   npm run kb:check    exit 1 if either file is out of date (for CI)
@@ -21,7 +21,7 @@ import { formatPeriod, present } from '../frontend/src/content/format.js';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROFILE_PATH = path.join(root, 'frontend/src/content/profile.js');
 const PROMPT_PATH = path.join(root, 'backend/assistant/system-prompt.md');
-const GITHUB_PATH = path.join(root, 'backend/content/github.json');
+const PROFILE_JSON_PATH = path.join(root, 'backend/content/profile.json');
 
 const p = profile;
 const lines = (...parts) => parts.flat().filter((part) => part !== null && part !== undefined && part !== false).join('\n');
@@ -205,9 +205,11 @@ function systemPrompt() {
   );
 }
 
-function githubConfig() {
+function backendProfile() {
   const config = {
     _generated: 'From frontend/src/content/profile.js by `npm run kb:export`. Do not edit by hand.',
+    name: p.name,
+    contactEmail: p.email,
     username: p.socials.githubUsername,
     // Shown in "Featured" already, so left out of the "More on GitHub" feed.
     featuredRepos: p.featuredProjects.filter((project) => project.repo).map(({ repo }) => `${repo.owner}/${repo.name}`),
@@ -229,7 +231,7 @@ async function todoLines() {
 
 const outputs = [
   [PROMPT_PATH, systemPrompt()],
-  [GITHUB_PATH, githubConfig()],
+  [PROFILE_JSON_PATH, backendProfile()],
 ];
 
 if (process.argv.includes('--check')) {

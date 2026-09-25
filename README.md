@@ -11,12 +11,13 @@ A production-ready full-stack portfolio website with an integrated AI chatbot as
 
 ## Features
 
-- Modern, responsive portfolio design
-- AI chatbot assistant for portfolio inquiries
-- **Dynamic GitHub projects** - Automatically displays your public repositories
-- Sections: Hero, Skills, Projects, Contact
-- Streaming-like chat responses
-- Environment-based configuration
+- Sections: navbar (active-section highlighting, mobile menu) → Hero → About → Skills → Featured Projects
+  (case studies) → More on GitHub (live) → Experience & Education timeline → Contact → Footer
+- AI assistant (Claude Haiku 4.5) that answers questions about Arnold, streamed in real time
+- Contact form (Resend) with a `mailto:` fallback when email sending isn't configured
+- Light/dark theme (follows the OS, remembers your choice), WCAG AA colors (see [docs/design.md](./docs/design.md))
+- All personal content in one file: `frontend/src/content/profile.js`, which also generates the
+  assistant's knowledge base (`npm run kb:export`) and the résumé PDF (`npm run resume:build`)
 
 ## Local Setup
 
@@ -71,6 +72,8 @@ Setup, cost controls and troubleshooting: **[docs/assistant.md](./docs/assistant
 - `CHAT_DAILY_LIMIT` - Optional global cap on chat messages per UTC day (default 300, `0` = off)
 - `FRONTEND_URL` - Comma-separated origins allowed by CORS (your deployed frontend)
 - `GITHUB_TOKEN` - Optional GitHub token; raises the API limit for the projects feed from 60 to 5,000 requests/hour
+- `RESEND_API_KEY` - Optional; enables the contact form's email sending (otherwise it falls back to `mailto:`)
+- `CONTACT_TO_EMAIL` / `CONTACT_FROM_EMAIL` - Optional recipient/sender overrides for contact emails
 - `PORT` - Server port (default: 5000)
 
 ### Frontend (.env)
@@ -183,6 +186,12 @@ data: {}
 ```
 On failure an `error` event is sent: `data: {"code":"UPSTREAM_ERROR","error":"..."}`.
 
+### POST /api/contact
+
+`{ "name": "...", "email": "...", "message": "...", "website": "" }` → `{ "ok": true }`.
+`website` is a honeypot and must be empty. Rate-limited to 5 per hour per IP. Returns `503 CONTACT_DISABLED`
+when `RESEND_API_KEY` isn't set (the frontend then opens a prefilled `mailto:` link). `GET /api/contact/status` → `{ "enabled": bool }`.
+
 ### GET /api/github/repos
 
 Public repositories for the "More on GitHub" section, plus live metadata for featured team repos.
@@ -213,6 +222,8 @@ and with nothing cached the endpoint returns `503 GITHUB_UNAVAILABLE` (featured 
 - `npm run dev` - Start both frontend and backend in development mode
 - `npm run build` - Build frontend for production
 - `npm start` - Start backend server
+- `npm run kb:export` - Regenerate the assistant prompt and backend profile data from `profile.js` (`kb:check` verifies)
+- `npm run resume:build` - Regenerate `frontend/public/resume.pdf` from `profile.js` (needs Chrome or Edge)
 
 ## License
 

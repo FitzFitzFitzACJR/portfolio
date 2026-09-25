@@ -3,10 +3,12 @@ import cors from 'cors';
 import helmet from 'helmet';
 import createChatRouter from './routes/chat.js';
 import createGitHubRouter from './routes/github.js';
+import createContactRouter from './routes/contact.js';
 import { resolveAssistantConfig } from './config/assistant.js';
 import { createAssistantClient } from './services/assistant.js';
 import { resolveGitHubConfig } from './config/github.js';
 import { createGitHubService } from './services/github.js';
+import { createResendMailer, resolveMailerConfig } from './services/mailer.js';
 
 const DEV_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:4173', 'http://127.0.0.1:4173'];
 
@@ -28,11 +30,25 @@ export function resolveAllowedOrigins(env = process.env) {
  * @param {object} [options.assistantClient] - defaults to a real Claude client when enabled
  * @param {object} [options.rateLimit] - { windowMs, limit } override for chat routes
  * @param {object} [options.github] - GitHub service ({ getRepos }); defaults to the real one
+ * @param {object} [options.mailerConfig] - defaults to resolveMailerConfig(env)
+ * @param {object} [options.mailer] - contact mailer ({ send }); defaults to Resend when configured
+ * @param {object} [options.contactRateLimit] - { windowMs, limit } override for the contact route
  */
-export function createApp({ env = process.env, assistantConfig, assistantClient, rateLimit, github } = {}) {
+export function createApp({
+  env = process.env,
+  assistantConfig,
+  assistantClient,
+  rateLimit,
+  github,
+  mailerConfig,
+  mailer,
+  contactRateLimit,
+} = {}) {
   const config = assistantConfig ?? resolveAssistantConfig(env);
   const client = assistantClient ?? (config.enabled ? createAssistantClient(config) : null);
   const githubService = github ?? createGitHubService(resolveGitHubConfig(env));
+  const contactConfig = mailerConfig ?? resolveMailerConfig(env);
+  const contactMailer = mailer ?? (contactConfig.enabled ? createResendMailer(contactConfig) : null);
   const allowedOrigins = resolveAllowedOrigins(env);
   const allowAnyOrigin = allowedOrigins.has('*');
 
@@ -71,6 +87,7 @@ export function createApp({ env = process.env, assistantConfig, assistantClient,
 
   app.use('/api', createChatRouter({ config, client, rateLimit }));
   app.use('/api', createGitHubRouter({ github: githubService }));
+  app.use('/api', createContactRouter({ config: contactConfig, mailer: contactMailer, rateLimit: contactRateLimit }));
 
   app.use((req, res) => {
     res.status(404).json({ error: 'Route not found', code: 'NOT_FOUND' });
@@ -88,5 +105,5 @@ export function createApp({ env = process.env, assistantConfig, assistantClient,
     res.status(500).json({ error: 'Internal server error', code: 'INTERNAL' });
   });
 
-  return { app, config };
+  return { app, config, contactConfig };
 }

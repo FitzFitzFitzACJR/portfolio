@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import StatusDot from './StatusDot';
 import useAssistantStatus from './useAssistantStatus';
+import { OPEN_CHAT_EVENT } from './openChat';
 
 // The panel (and react-markdown) is only downloaded when first needed.
 const loadPanel = () => import('./ChatPanel');
@@ -27,13 +28,24 @@ export default function ChatLauncher() {
     wasOpen.current = open;
   }, [open]);
 
-  const toggle = () => {
-    if (!open) {
-      setMounted(true);
-      if (status === 'unreachable') retry();
-    }
-    setOpen(!open);
+  const show = () => {
+    setMounted(true);
+    if (status === 'unreachable') retry();
+    setOpen(true);
   };
+  const toggle = () => (open ? setOpen(false) : show());
+
+  // Other components (e.g. the hero's "Ask my AI assistant") open the panel via openChat().
+  const showRef = useRef(show);
+  showRef.current = show;
+  useEffect(() => {
+    const onOpen = () => {
+      loadPanel();
+      showRef.current();
+    };
+    window.addEventListener(OPEN_CHAT_EVENT, onOpen);
+    return () => window.removeEventListener(OPEN_CHAT_EVENT, onOpen);
+  }, []);
 
   return (
     <>
@@ -47,7 +59,7 @@ export default function ChatLauncher() {
         aria-expanded={open}
         aria-controls={mounted ? 'chat-panel' : undefined}
         aria-haspopup="dialog"
-        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary-700 text-white shadow-lg transition-transform hover:bg-primary-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 motion-safe:hover:scale-105"
+        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-accent-bg text-white shadow-lg transition-transform hover:bg-hero-from motion-safe:hover:scale-105"
       >
         {open ? (
           <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -81,7 +93,7 @@ function PanelLoading() {
   return (
     <div
       role="status"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-white text-sm text-gray-700 sm:inset-auto sm:bottom-24 sm:right-6 sm:h-40 sm:w-[400px] sm:rounded-2xl sm:border sm:border-gray-200 sm:shadow-2xl"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-surface text-sm text-muted sm:inset-auto sm:bottom-24 sm:right-6 sm:h-40 sm:w-[400px] sm:rounded-2xl sm:border sm:border-line sm:shadow-2xl"
     >
       Loading assistant…
     </div>

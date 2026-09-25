@@ -29,12 +29,16 @@ const profile = {
   availability: 'Open to entry-level full-stack and frontend developer roles.',
   location: 'Cebu, Philippines',
   email: 'cutadalamo@gmail.com',
+  // Files in frontend/public. Avatar cropped from the original in the `pic` repo.
   avatar: {
-    // Phase 4 moves this into frontend/public as an optimized WebP.
-    src: `https://raw.githubusercontent.com/${GITHUB_USERNAME}/pic/main/994540f3-43ee-41d6-a692-72841d021de2.jpg`,
+    src: '/images/avatar-512.webp',
+    srcSet: '/images/avatar-256.webp 256w, /images/avatar-512.webp 512w',
+    width: 512,
+    height: 512,
     alt: 'Portrait of Arnold Cutad Jr.',
   },
-  resume: null, // TODO: '/resume.pdf' once a web copy without phone number/home address is added (Phase 4)
+  // Generated from this file by `npm run resume:build` (no phone number or home address).
+  resume: '/resume.pdf',
   siteUrl: null, // TODO: deployed portfolio URL (e.g. https://<your-site>.onrender.com)
 
   socials: {
@@ -188,7 +192,7 @@ const profile = {
 
   // GitHub feed ("More on GitHub"): the backend lists your public repos, minus forks, archived
   // repos, featured projects (shown above) and these hidden ones.
-  hiddenRepos: ['pic'], // holds the avatar image, not a project
+  hiddenRepos: ['pic'], // holds the original avatar photo, not a project
   // Repos owned by others that appear in featuredProjects; the backend fetches their public metadata.
   externalRepos: [{ owner: 'Kurisu21', name: 'webeenthere', label: 'Team project' }],
 

@@ -146,3 +146,11 @@ export async function* readSSE(body) {
 export async function fetchGitHubRepos({ limit = 6, signal } = {}) {
   return request(`/api/github/repos?limit=${limit}`, { signal, timeoutMs: 20_000 });
 }
+
+/**
+ * POST /api/contact → { ok: true }. Throws ApiError with code CONTACT_DISABLED (not configured),
+ * RATE_LIMITED, INVALID_INPUT, CONTACT_FAILED or NETWORK.
+ */
+export async function sendContactMessage({ name, email, message, website }) {
+  return request('/api/contact', { method: 'POST', body: { name, email, message, website }, timeoutMs: 20_000 });
+}

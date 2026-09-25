@@ -4,6 +4,7 @@ import profile from '../../content/profile'
 import CaseStudyDialog from './CaseStudyDialog'
 import FeaturedProjectCard, { ExternalIcon, linkClass } from './FeaturedProjectCard'
 import RepoCard, { RepoCardSkeleton } from './RepoCard'
+import Reveal from '../Reveal'
 
 const MORE_LIMIT = 6
 
@@ -46,14 +47,17 @@ export default function Projects() {
   }
 
   return (
-    <section id="projects" aria-labelledby="projects-title" className="bg-gray-50 px-4 py-20">
+    <section id="projects" aria-labelledby="projects-title" className="px-4 py-20">
       <div className="mx-auto max-w-6xl">
-        <h2 id="projects-title" className="mb-4 text-center text-4xl font-bold text-gray-900">
-          Featured Projects
-        </h2>
-        <p className="mx-auto mb-12 max-w-2xl text-center text-gray-700">
-          Selected work, from a team capstone I managed to tools I built on my own. Open a case study for the details.
-        </p>
+        <Reveal className="mb-10">
+          <p className="eyebrow">Projects</p>
+          <h2 id="projects-title" className="section-title mt-2">
+            Featured projects
+          </h2>
+          <p className="mt-4 max-w-2xl text-muted">
+            Selected work, from a team capstone I managed to tools I built on my own. Open a case study for the details.
+          </p>
+        </Reveal>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {profile.featuredProjects.map((project) => (
@@ -87,7 +91,7 @@ function MoreOnGitHub({ feed, onRetry }) {
   return (
     <section className="mt-20" aria-labelledby="more-projects-title">
       <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
-        <h3 id="more-projects-title" className="text-2xl font-bold text-gray-900">
+        <h3 id="more-projects-title" className="text-2xl font-bold">
           More on GitHub
         </h3>
         {profileLink}
@@ -106,12 +110,12 @@ function MoreOnGitHub({ feed, onRetry }) {
         )}
 
         {status === 'error' && (
-          <div className="flex flex-wrap items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 text-gray-800">
+          <div className="flex flex-wrap items-center gap-4 rounded-xl border border-line bg-surface p-5 text-fg">
             <p className="flex-1">Couldn&apos;t load projects from GitHub right now.</p>
             <button
               type="button"
               onClick={onRetry}
-              className="rounded-lg border border-gray-400 px-4 py-2 text-sm font-medium hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
+              className="rounded-lg border border-field px-4 py-2 text-sm font-medium hover:bg-surface-2"
             >
               Try again
             </button>
@@ -119,7 +123,7 @@ function MoreOnGitHub({ feed, onRetry }) {
         )}
 
         {status === 'ready' && repos.length === 0 && (
-          <p className="text-gray-700">
+          <p className="text-muted">
             Everything public right now is featured above. New repositories will show up here automatically.
           </p>
         )}
