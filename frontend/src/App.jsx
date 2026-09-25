@@ -1,17 +1,13 @@
-import { useState } from 'react'
 import Home from './pages/Home'
-import Chatbot from './components/Chatbot'
+import ChatLauncher from './components/chat/ChatLauncher'
 
 function App() {
-  const [isChatbotOpen, setIsChatbotOpen] = useState(false)
-
   return (
     <div className="min-h-screen">
       <Home />
-      <Chatbot isOpen={isChatbotOpen} setIsOpen={setIsChatbotOpen} />
+      <ChatLauncher />
     </div>
   )
 }
 
 export default App
-

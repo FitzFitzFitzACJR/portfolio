@@ -1,190 +1,176 @@
-import axios from 'axios';
-
 /**
- * Flowise AI API Service
- * Handles communication with Flowise AI chatflow API
+ * Flowise prediction API client.
+ * Docs: POST <host>/api/v1/prediction/<chatflowId>
  */
-class FlowiseService {
-  constructor() {
-    this.apiKey = process.env.FLOWISE_API_KEY;
-    this.apiUrl = process.env.FLOWISE_API_URL;
-    this.chatflowId = process.env.FLOWISE_CHATFLOW_ID;
-    
-    // If FLOWISE_API_URL is not provided, construct it from chatflow ID
-    if (!this.apiUrl && this.chatflowId) {
-      // Default to Flowise Cloud, but can be overridden
-      const baseUrl = process.env.FLOWISE_BASE_URL || 'https://cloud.flowise.ai';
-      this.apiUrl = `${baseUrl}/api/v1/prediction/${this.chatflowId}`;
-    }
 
-    // Fix common URL mistakes
-    if (this.apiUrl) {
-      // Fix .com to .ai
-      if (this.apiUrl.includes('cloud.flowise.com')) {
-        this.apiUrl = this.apiUrl.replace('cloud.flowise.com', 'cloud.flowise.ai');
-        console.warn('Fixed Flowise URL: changed .com to .ai');
-      }
-    }
-  }
-
+export class ChatError extends Error {
   /**
-   * Check if API is configured
+   * @param {'UPSTREAM_TIMEOUT'|'UPSTREAM_ERROR'|'ABORTED'} code - stable code sent to the client
+   * @param {string} detail - full detail for server logs only
    */
-  isConfigured() {
-    return !!(this.apiUrl || this.chatflowId);
-  }
-
-  /**
-   * Send message to Flowise chatflow and get AI response
-   * @param {string} userMessage - The user's message
-   * @param {Array} history - Chat history (optional)
-   * @returns {Promise<string>} - The AI's response
-   */
-  async getChatResponse(userMessage, history = []) {
-    if (!this.isConfigured()) {
-      throw new Error('Flowise API is not configured. Please set FLOWISE_API_URL or FLOWISE_CHATFLOW_ID in environment variables.');
-    }
-
-    if (!this.apiUrl) {
-      throw new Error('FLOWISE_API_URL is required. Please set it in your .env file.');
-    }
-
-    try {
-      const requestBody = {
-        question: userMessage,
-        history: history,
-        overrideConfig: {}
-      };
-
-      const headers = {
-        'Content-Type': 'application/json'
-      };
-
-      // Add API key if provided
-      if (this.apiKey) {
-        headers['Authorization'] = `Bearer ${this.apiKey}`;
-      }
-
-      const response = await axios.post(
-        this.apiUrl,
-        requestBody,
-        {
-          headers,
-          timeout: 30000, // 30 second timeout
-          validateStatus: function (status) {
-            return status < 500; // Don't throw for 4xx errors, we'll handle them
-          }
-        }
-      );
-
-      // Check if response is HTML (wrong endpoint)
-      const responseData = response.data;
-      const responseString = typeof responseData === 'string' ? responseData : JSON.stringify(responseData);
-      
-      if (responseString.includes('<!DOCTYPE html>') || responseString.includes('<html')) {
-        console.error('Flowise returned HTML instead of JSON. Check your API URL:', this.apiUrl);
-        throw new Error(
-          'Flowise API returned HTML instead of JSON. This usually means:\n' +
-          '1. The API URL is incorrect (pointing to Flowise UI instead of API endpoint)\n' +
-          '2. The chatflow ID is wrong\n' +
-          '3. The endpoint format is incorrect\n\n' +
-          `Current URL: ${this.apiUrl}\n` +
-          'Expected format: https://cloud.flowise.ai/api/v1/prediction/your-chatflow-id'
-        );
-      }
-
-      // Check response status
-      if (response.status >= 400) {
-        const errorMsg = responseData?.message || responseData?.error || `HTTP ${response.status} error`;
-        throw new Error(`Flowise API error: ${errorMsg}`);
-      }
-
-      // Flowise API response format - check for text field
-      if (responseData && typeof responseData === 'object' && responseData.text) {
-        return responseData.text.trim();
-      }
-
-      // Alternative: response.data is directly the text
-      if (responseData && typeof responseData === 'string') {
-        // Make sure it's not HTML
-        if (responseData.includes('<html') || responseData.includes('<!DOCTYPE')) {
-          throw new Error('Flowise returned HTML. Please check your API endpoint configuration.');
-        }
-        return responseData.trim();
-      }
-
-      // If response has answer field
-      if (responseData && responseData.answer) {
-        return responseData.answer.trim();
-      }
-
-      // Log the actual response for debugging
-      console.error('Unexpected Flowise response format:', {
-        status: response.status,
-        headers: response.headers['content-type'],
-        dataType: typeof responseData,
-        dataPreview: typeof responseData === 'string' 
-          ? responseData.substring(0, 200) 
-          : JSON.stringify(responseData).substring(0, 200)
-      });
-
-      throw new Error(
-        'Unexpected response format from Flowise API. ' +
-        'Expected JSON with "text" or "answer" field, but got: ' +
-        (typeof responseData === 'string' ? 'HTML/text' : typeof responseData)
-      );
-    } catch (error) {
-      // If it's already our custom error, just throw it
-      if (error.message && (error.message.includes('Flowise') || error.message.includes('HTML'))) {
-        throw error;
-      }
-
-      console.error('Flowise API Error:', {
-        message: error.message,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        url: this.apiUrl,
-        responseData: error.response?.data
-      });
-      
-      if (error.response?.status === 401 || error.response?.status === 403) {
-        throw new Error('Invalid API key or unauthorized access. Please check your FLOWISE_API_KEY.');
-      }
-      
-      if (error.response?.status === 404) {
-        throw new Error(
-          'Chatflow not found (404). Please verify:\n' +
-          `1. Your chatflow ID is correct: ${this.chatflowId || 'N/A'}\n` +
-          `2. Your API URL is correct: ${this.apiUrl}\n` +
-          '3. The chatflow is deployed and accessible'
-        );
-      }
-      
-      if (error.response?.status === 429) {
-        throw new Error('Rate limit exceeded. Please try again later.');
-      }
-
-      if (error.code === 'ECONNABORTED') {
-        throw new Error('Request timeout. The chatflow is taking too long to respond.');
-      }
-
-      if (error.code === 'ENOTFOUND' || error.code === 'ECONNREFUSED') {
-        throw new Error(
-          `Cannot connect to Flowise API at ${this.apiUrl}. ` +
-          'Please check if the URL is correct and the service is accessible.'
-        );
-      }
-      
-      throw new Error(
-        error.response?.data?.message || 
-        error.response?.data?.error || 
-        error.message || 
-        'Failed to get AI response from Flowise'
-      );
-    }
+  constructor(code, detail) {
+    super(detail);
+    this.name = 'ChatError';
+    this.code = code;
   }
 }
 
-export default FlowiseService;
+const PREDICT_TIMEOUT_MS = 45_000;
+const STREAM_TIMEOUT_MS = 90_000;
 
+export function createFlowiseClient(
+  config,
+  { fetchImpl = fetch, predictTimeoutMs = PREDICT_TIMEOUT_MS, streamTimeoutMs = STREAM_TIMEOUT_MS } = {}
+) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (config.apiKey) headers.Authorization = `Bearer ${config.apiKey}`;
 
+  const buildBody = ({ question, sessionId, streaming }) => {
+    const body = { question, streaming };
+    if (sessionId) {
+      // chatId groups messages in Flowise; overrideConfig.sessionId keys the Memory node.
+      body.chatId = sessionId;
+      body.overrideConfig = { sessionId };
+    }
+    return JSON.stringify(body);
+  };
+
+  async function post({ question, sessionId, streaming, signal, timeoutMs }) {
+    const timeout = AbortSignal.timeout(timeoutMs);
+    const combined = signal ? AbortSignal.any([signal, timeout]) : timeout;
+    let res;
+    try {
+      res = await fetchImpl(config.url, {
+        method: 'POST',
+        headers: streaming ? { ...headers, Accept: 'text/event-stream' } : headers,
+        body: buildBody({ question, sessionId, streaming }),
+        signal: combined,
+      });
+    } catch (err) {
+      throw toChatError(err, timeout);
+    }
+
+    const contentType = res.headers.get('content-type') || '';
+    if (!res.ok) {
+      const text = await safeText(res);
+      throw new ChatError('UPSTREAM_ERROR', `Flowise HTTP ${res.status}: ${hint(res.status)} ${text.slice(0, 300)}`);
+    }
+    if (contentType.includes('text/html')) {
+      throw new ChatError(
+        'UPSTREAM_ERROR',
+        'Flowise returned HTML instead of JSON – the URL points at the web UI, not /api/v1/prediction/<id>'
+      );
+    }
+    return { res, contentType, timeout };
+  }
+
+  /** Non-streaming prediction. Resolves with the full reply text. */
+  async function predict({ question, sessionId, signal }) {
+    const { res, timeout } = await post({ question, sessionId, streaming: false, signal, timeoutMs: predictTimeoutMs });
+    let data;
+    try {
+      data = await res.json();
+    } catch (err) {
+      throw toChatError(err, timeout, 'Flowise returned a non-JSON body');
+    }
+    return extractText(data);
+  }
+
+  /**
+   * Streaming prediction. Calls onToken(text) for each chunk and resolves when Flowise ends.
+   * If the chatflow can't stream, Flowise answers with plain JSON; that is relayed as one token.
+   */
+  async function stream({ question, sessionId, signal, onToken }) {
+    const { res, contentType, timeout } = await post({
+      question,
+      sessionId,
+      streaming: true,
+      signal,
+      timeoutMs: streamTimeoutMs,
+    });
+
+    if (!contentType.includes('text/event-stream')) {
+      let data;
+      try {
+        data = await res.json();
+      } catch (err) {
+        throw toChatError(err, timeout, 'Flowise returned a non-JSON body');
+      }
+      onToken(extractText(data));
+      return;
+    }
+
+    const decoder = new TextDecoder();
+    let buffer = '';
+    try {
+      for await (const chunk of res.body) {
+        buffer += decoder.decode(chunk, { stream: true }).replace(/\r\n/g, '\n');
+        let boundary;
+        while ((boundary = buffer.indexOf('\n\n')) !== -1) {
+          const block = buffer.slice(0, boundary);
+          buffer = buffer.slice(boundary + 2);
+          const event = parseFlowiseEvent(block);
+          if (!event) continue;
+          if (event.event === 'token' && typeof event.data === 'string') onToken(event.data);
+          else if (event.event === 'error') throw new ChatError('UPSTREAM_ERROR', `Flowise stream error: ${stringify(event.data)}`);
+          else if (event.event === 'end') return;
+        }
+      }
+    } catch (err) {
+      throw toChatError(err, timeout);
+    }
+  }
+
+  return { predict, stream };
+}
+
+/** Flowise SSE blocks look like "message:\ndata:{"event":"token","data":"Hi"}". */
+export function parseFlowiseEvent(block) {
+  const data = block
+    .split('\n')
+    .filter((line) => line.startsWith('data:'))
+    .map((line) => line.slice(5).replace(/^ /, ''))
+    .join('\n');
+  if (!data) return null;
+  try {
+    const parsed = JSON.parse(data);
+    return parsed && typeof parsed === 'object' ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function extractText(data) {
+  if (typeof data === 'string') return data.trim();
+  const text = data?.text ?? data?.answer ?? data?.json;
+  if (typeof text === 'string') return text.trim();
+  if (text && typeof text === 'object') return JSON.stringify(text);
+  throw new ChatError('UPSTREAM_ERROR', `Unexpected Flowise response shape: ${JSON.stringify(data).slice(0, 200)}`);
+}
+
+function toChatError(err, timeoutSignal, context) {
+  if (err instanceof ChatError) return err;
+  if (timeoutSignal?.aborted) return new ChatError('UPSTREAM_TIMEOUT', 'Flowise did not respond in time');
+  if (err?.name === 'AbortError') return new ChatError('ABORTED', 'Request aborted by client');
+  const cause = err?.cause?.code ? ` (${err.cause.code})` : '';
+  return new ChatError('UPSTREAM_ERROR', `${context ?? 'Flowise request failed'}: ${err?.message ?? err}${cause}`);
+}
+
+function hint(status) {
+  if (status === 401 || status === 403) return 'check FLOWISE_API_KEY and that the key is assigned to the chatflow.';
+  if (status === 404) return 'chatflow not found – check the chatflow id (Cloud V1 flows may not exist on V2).';
+  if (status === 429) return 'Flowise rate limit hit.';
+  return '';
+}
+
+async function safeText(res) {
+  try {
+    return await res.text();
+  } catch {
+    return '';
+  }
+}
+
+function stringify(value) {
+  return typeof value === 'string' ? value : JSON.stringify(value);
+}

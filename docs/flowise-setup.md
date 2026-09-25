@@ -50,7 +50,12 @@ Whenever your info changes, update the knowledge base file, re-upload it, and re
    FLOWISE_API_KEY=<your-key>
    ```
    Alternatively set `FLOWISE_BASE_URL=https://cloud.flowiseai.com` + `FLOWISE_CHATFLOW_ID=<id>` and leave `FLOWISE_API_URL` empty.
-4. Restart the backend and test without the UI:
+4. Restart the backend. The first log lines tell you whether it worked:
+   ```
+   Chatbot: enabled (cloud.flowiseai.com, chatflow …1a2b, API key set)
+   Chatbot: DISABLED – FLOWISE_API_URL must be the full prediction endpoint (…)
+   ```
+   `GET /health` also reports `"chatbot": "enabled" | "disabled"`. Then test without the UI:
    ```bash
    curl -X POST http://localhost:5000/api/chat -H "Content-Type: application/json" -d '{"message":"Hello"}'
    ```
@@ -70,15 +75,17 @@ Expected: JSON like `{"text": "Hello! ..."}`.
 
 ## 4. Troubleshooting
 
+Visitors only ever see short friendly messages; the full upstream error (status, hint, body excerpt) is in the backend logs, prefixed `[chat]`.
+
 | Symptom | Likely cause | Fix |
 |---|---|---|
 | Response is HTML (`<!DOCTYPE html>`) | URL is the site root, a share/embed link, or missing `/api/v1/prediction/` | Use the exact URL from the `</>` button. |
 | 404 Not Found | Wrong chatflow ID, or chatflow was on Cloud V1 and no longer exists | Re-copy the ID; recreate the chatflow if needed. |
 | 401 / 403 | Missing or wrong `FLOWISE_API_KEY`, or key not assigned to the chatflow | Create/assign a key in Flowise → API Keys. |
 | `ENOTFOUND` / cannot connect | Typo in the host (e.g. `cloud.flowise.ai`) | Host must be `cloud.flowiseai.com` or your own instance. |
-| Timeout | Slow model, or chatflow errors internally | Test the chatflow in Flowise's chat panel; check its logs. |
+| Timeout (`UPSTREAM_TIMEOUT`) | Slow model (limit: 45 s, or 90 s when streaming), or the chatflow errors internally | Test the chatflow in Flowise's chat panel; check its logs. |
 | Works locally, not on Render | Env vars not set on Render, or changed without redeploying | Set them in the service's Environment tab and redeploy. |
-| Bot forgets previous messages | No Memory node in the chatflow | Add a Memory node (the backend supplies `sessionId`). |
+| Bot forgets previous messages | No Memory node in the chatflow, or Flowise ignores overrides | Add a Memory node. The backend sends `chatId` and `overrideConfig.sessionId`; if memory still resets, enable **Override Config** for `sessionId` in the chatflow's Security settings. |
 | Bot ignores the knowledge base | Loader not connected, or retrieval threshold too strict | Check node wiring; raise chunk size / lower similarity threshold. |
 
 Checklist:

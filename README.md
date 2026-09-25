@@ -180,29 +180,45 @@ portfolio-ai/
 
 ## API Endpoints
 
+Errors are JSON `{ "error": "<short message>", "code": "<CODE>" }` with codes such as
+`CHAT_DISABLED`, `RATE_LIMITED`, `UPSTREAM_TIMEOUT`, `UPSTREAM_ERROR`, `INVALID_INPUT`, `CORS_REJECTED`.
+Chat routes are rate-limited (20 requests / 5 min / IP); messages are capped at 1,000 characters.
+
+### GET /health
+
+`{ "status": "ok", "chatbot": "enabled" | "disabled", "uptime": 123 }`
+
+### GET /api/chat/status
+
+`{ "enabled": true }`. Never exposes URLs or keys.
+
 ### POST /api/chat
 
-Send a message to the Flowise AI chatbot.
+Non-streaming reply (used as a fallback).
 
 **Request:**
 ```json
-{
-  "message": "What technologies do you use?",
-  "history": [] // Optional: chat history for context
-}
+{ "message": "What technologies do you use?", "sessionId": "optional-uuid-for-memory" }
 ```
 
 **Response:**
 ```json
-{
-  "reply": "I use React, Node.js, Express, and various modern web technologies..."
-}
+{ "reply": "I use React, Node.js, Express, ..." }
 ```
 
-**Note:** The chatbot uses Flowise AI's chatflow API. Make sure you have:
-1. Created a chatflow in Flowise (self-hosted or cloud)
-2. Configured the chatflow with your portfolio assistant prompts
-3. Set the `FLOWISE_API_URL` or `FLOWISE_CHATFLOW_ID` in your environment variables
+`sessionId` is forwarded to Flowise (`overrideConfig.sessionId`) so a Memory node can keep context.
+
+### POST /api/chat/stream
+
+Same request body; responds with Server-Sent Events:
+```
+event: token
+data: {"text":"Hello"}
+
+event: end
+data: {}
+```
+On failure an `error` event is sent: `data: {"code":"UPSTREAM_ERROR","error":"..."}`.
 
 ### GET /api/github/repos
 
