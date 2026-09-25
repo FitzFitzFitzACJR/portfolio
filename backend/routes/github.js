@@ -1,39 +1,35 @@
 import express from 'express';
-import ProjectsService from '../services/projects.js';
+import { GitHubUnavailableError } from '../services/github.js';
 
-const router = express.Router();
+export const DEFAULT_LIMIT = 6;
+export const MAX_LIMIT = 30;
 
-// Lazy initialization
-let projectsService = null;
+/** "?limit=" → integer in [1, MAX_LIMIT]; missing or invalid → DEFAULT_LIMIT. */
+export function parseLimit(value) {
+  const n = Number.parseInt(value, 10);
+  if (!Number.isFinite(n)) return DEFAULT_LIMIT;
+  return Math.min(Math.max(n, 1), MAX_LIMIT);
+}
 
-const getProjectsService = () => {
-  if (!projectsService) {
-    projectsService = new ProjectsService();
-  }
-  return projectsService;
-};
+/** @param {{ github: { getRepos: Function } }} deps */
+export default function createGitHubRouter({ github }) {
+  const router = express.Router();
 
-/**
- * GET /api/github/repos
- * Get static project data (no API calls)
- */
-router.get('/github/repos', async (req, res) => {
-  try {
-    const service = getProjectsService();
-    const projects = service.getProjects();
+  /**
+   * GET /api/github/repos?limit=6
+   * → { repos: Repo[], external: Repo[], count, source: 'live'|'cache'|'stale', fetchedAt }
+   * `repos` excludes forks, archived, featured and hidden repos; `external` holds featured team repos.
+   */
+  router.get('/github/repos', async (req, res, next) => {
+    try {
+      const result = await github.getRepos({ limit: parseLimit(req.query.limit) });
+      res.set('Cache-Control', 'public, max-age=300').json({ ...result, count: result.repos.length });
+    } catch (err) {
+      if (!(err instanceof GitHubUnavailableError)) return next(err);
+      console.error(`[github] ${err.message}`);
+      res.status(503).json({ error: 'Projects from GitHub are unavailable right now.', code: 'GITHUB_UNAVAILABLE' });
+    }
+  });
 
-    res.json({
-      repos: projects,
-      count: projects.length
-    });
-  } catch (error) {
-    console.error('Projects endpoint error:', error);
-    
-    res.status(500).json({
-      error: error.message || 'Failed to get projects'
-    });
-  }
-});
-
-export default router;
-
+  return router;
+}

@@ -38,7 +38,6 @@ A production-ready full-stack portfolio website with an integrated AI chatbot as
    **Backend (.env):**
    ```env
    ANTHROPIC_API_KEY=<your-anthropic-api-key>
-   GITHUB_PROFILE_URL=https://github.com/FitzFitzFitz69
    PORT=5000
    ```
 
@@ -71,7 +70,7 @@ Setup, cost controls and troubleshooting: **[docs/assistant.md](./docs/assistant
 - `ANTHROPIC_MODEL` - Optional, defaults to `claude-haiku-4-5`
 - `CHAT_DAILY_LIMIT` - Optional global cap on chat messages per UTC day (default 300, `0` = off)
 - `FRONTEND_URL` - Comma-separated origins allowed by CORS (your deployed frontend)
-- `GITHUB_PROFILE_URL` - Your GitHub profile URL (required for projects section, e.g., `https://github.com/username`)
+- `GITHUB_TOKEN` - Optional GitHub token; raises the API limit for the projects feed from 60 to 5,000 requests/hour
 - `PORT` - Server port (default: 5000)
 
 ### Frontend (.env)
@@ -97,7 +96,6 @@ Setup, cost controls and troubleshooting: **[docs/assistant.md](./docs/assistant
 NODE_ENV=production
 PORT=10000
 ANTHROPIC_API_KEY=<your-anthropic-api-key>
-GITHUB_PROFILE_URL=https://github.com/FitzFitzFitz69
 FRONTEND_URL=https://your-frontend.onrender.com
 ```
 
@@ -187,30 +185,27 @@ On failure an `error` event is sent: `data: {"code":"UPSTREAM_ERROR","error":"..
 
 ### GET /api/github/repos
 
-Fetch GitHub repositories dynamically.
+Public repositories for the "More on GitHub" section, plus live metadata for featured team repos.
+Cached in memory for 1 hour; if GitHub is unreachable the last good result is served (`source: "stale"`),
+and with nothing cached the endpoint returns `503 GITHUB_UNAVAILABLE` (featured projects still render from `profile.js`).
 
-**Query Parameters:**
-- `limit` (optional) - Maximum number of repos to return (default: 6)
+**Query:** `limit` (default 6, clamped to 1–30)
 
 **Response:**
 ```json
 {
   "repos": [
-    {
-      "id": 123456789,
-      "name": "portfolio-ai",
-      "description": "Full-stack portfolio with AI chatbot",
-      "url": "https://github.com/username/portfolio-ai",
-      "language": "JavaScript",
-      "languages": ["JavaScript", "HTML", "CSS"],
-      "stars": 10,
-      "forks": 2,
-      "updatedAt": "2024-01-15T10:30:00Z"
-    }
+    { "id": 1, "name": "repo", "fullName": "FitzFitzFitzACJR/repo", "description": "…", "url": "https://github.com/…",
+      "language": "JavaScript", "stars": 0, "forks": 0, "topics": [], "pushedAt": "2026-09-01T00:00:00Z" }
   ],
-  "count": 1
+  "external": [{ "fullName": "Kurisu21/webeenthere", "label": "Team project", "language": "TypeScript", "…": "…" }],
+  "count": 1,
+  "source": "live",
+  "fetchedAt": "2026-09-25T07:38:23.383Z"
 }
 ```
+
+`repos` excludes forks, archived repos, featured projects and `hiddenRepos` from `profile.js`.
 
 ## Development
 

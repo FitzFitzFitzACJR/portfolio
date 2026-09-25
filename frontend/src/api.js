@@ -139,11 +139,10 @@ export async function* readSSE(body) {
 }
 
 /**
- * Fetch GitHub repositories
- * @param {number} limit - Maximum number of repos to fetch
- * @returns {Promise<Array>} - Array of repository objects
+ * GET /api/github/repos → { repos, external, count, source, fetchedAt }.
+ * `repos`: public repos for "More on GitHub" (featured/hidden/forks excluded).
+ * `external`: metadata for featured team repos owned by others.
  */
-export async function fetchGitHubRepos(limit = 6) {
-  const data = await request(`/api/github/repos?limit=${limit}`);
-  return data?.repos || [];
+export async function fetchGitHubRepos({ limit = 6, signal } = {}) {
+  return request(`/api/github/repos?limit=${limit}`, { signal, timeoutMs: 20_000 });
 }
