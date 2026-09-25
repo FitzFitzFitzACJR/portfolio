@@ -5,9 +5,17 @@ How to create, connect and debug the Flowise chatflow behind the portfolio assis
 > Flowise Cloud lives at **https://cloud.flowiseai.com**. (Not `cloud.flowise.ai`, which older versions of these docs used.)
 > Cloud V2 accounts do not sync with V1, so a chatflow or credential created on V1 may need to be recreated.
 
-Related files:
+Related files (both **generated**; don't edit them by hand):
 - [`flowise-system-prompt.txt`](./flowise-system-prompt.txt): system prompt to paste into the Chat Model node.
 - [`flowise-knowledge-base.md`](./flowise-knowledge-base.md): portfolio facts and FAQs to load as a document.
+
+Both come from `frontend/src/content/profile.js`, the same file the website reads. To update what the assistant knows:
+
+1. Edit `frontend/src/content/profile.js`.
+2. Run `npm run kb:export`. It rewrites both files and lists any `TODO`s still open in the profile.
+3. In Flowise, re-upload the knowledge base and paste the new system prompt, then save the chatflow.
+
+`npm run kb:check` fails if the committed files are out of date (useful in CI).
 
 ---
 
@@ -37,7 +45,7 @@ Pick one:
 | **Vector Store + Retrieval** | Document Loader → Embeddings → Vector Store → Retrieval QA → Chat Model. Chunk size 1000–2000, overlap 200–500, top K 3–5. | Large or frequently growing content. |
 | **Inline in the system prompt** | Paste the FAQ section into the system message. | Simplest, but you must edit the prompt on every change. |
 
-Whenever your info changes, update the knowledge base file, re-upload it, and re-test.
+Whenever your info changes: edit `profile.js`, run `npm run kb:export`, re-upload, and re-test.
 
 ## 3. Connect the backend
 
