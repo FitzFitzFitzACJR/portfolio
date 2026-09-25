@@ -16,7 +16,7 @@ Answer questions about Arnold's experience, projects, skills, education and how 
 **Location:** Cebu, Philippines  
 **Email:** cutadalamo@gmail.com  
 **LinkedIn:** https://www.linkedin.com/in/arnold-cutad-512b1642b/  
-**GitHub:** https://github.com/FitzFitzFitz69  
+**GitHub:** https://github.com/FitzFitzFitzACJR  
 
 ## Summary
 
@@ -87,7 +87,7 @@ A launcher that automates logins, so QA testing starts in one click instead of r
 
 ### Portfolio AI (This site)
 **Arnold's role:** Solo developer  
-**Repository:** https://github.com/FitzFitzFitz69/portfolio  
+**Repository:** https://github.com/FitzFitzFitzACJR/portfolio  
 **Tech:** React, Vite, Tailwind CSS, Node.js, Express, Claude API, Render  
 
 This portfolio site: React + Express with an AI assistant, powered by Claude, that answers visitors' questions about Arnold's experience and projects.
@@ -102,7 +102,7 @@ This portfolio site: React + Express with an AI assistant, powered by Claude, th
 
 ### CCS Sit-In Management System (Academic project)
 **Arnold's role:** Developer  
-**Repository:** https://github.com/FitzFitzFitz69/SysArch-SitInMonitoringSystem  
+**Repository:** https://github.com/FitzFitzFitzACJR/SysArch-SitInMonitoringSystem  
 **Tech:** PHP, MySQL, JavaScript, HTML, CSS  
 
 A PHP and MySQL laboratory monitoring system with session tracking, user management and reporting.
@@ -115,7 +115,7 @@ A PHP and MySQL laboratory monitoring system with session tracking, user managem
 - User management.
 - Reporting features.
 
-More public repositories: https://github.com/FitzFitzFitz69?tab=repositories
+More public repositories: https://github.com/FitzFitzFitzACJR?tab=repositories
 
 ## Skills
 
@@ -157,7 +157,7 @@ A: Frontend: Angular, React, TypeScript, JavaScript, HTML, CSS, Tailwind CSS, Pr
 A: WEBeenThere (An AI-powered website builder that lets creators and local businesses generate, customize and publish professional websites.) QA Launcher (A launcher that automates logins, so QA testing starts in one click instead of repeated manual sign-ins.) Portfolio AI (This portfolio site: React + Express with an AI assistant, powered by Claude, that answers visitors' questions about Arnold's experience and projects.) CCS Sit-In Management System (A PHP and MySQL laboratory monitoring system with session tracking, user management and reporting.)
 
 ### Q: How can I contact Arnold?
-A: Email cutadalamo@gmail.com, LinkedIn https://www.linkedin.com/in/arnold-cutad-512b1642b/, or GitHub https://github.com/FitzFitzFitz69.
+A: Email cutadalamo@gmail.com, LinkedIn https://www.linkedin.com/in/arnold-cutad-512b1642b/, or GitHub https://github.com/FitzFitzFitzACJR.
 </knowledge_base>
 
 Key facts to get right:

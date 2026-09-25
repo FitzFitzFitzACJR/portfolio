@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 /**
- * Build the AI assistant's system prompt (instructions + knowledge base) from
- * frontend/src/content/profile.js, the same file the website reads.
+ * Export the parts of frontend/src/content/profile.js (the site's single source of truth) that the
+ * backend needs. The backend deploys on its own (Render root dir = backend/), so it can't import
+ * the frontend; it reads these generated, committed files instead:
  *
- *   npm run kb:export   write backend/assistant/system-prompt.md (the backend loads it at startup)
- *   npm run kb:check    exit 1 if that file is out of date (for CI)
+ *   backend/assistant/system-prompt.md   AI assistant instructions + knowledge base
+ *   backend/content/github.json          GitHub username, featured/hidden/external repos
+ *
+ *   npm run kb:export   write both files
+ *   npm run kb:check    exit 1 if either file is out of date (for CI)
  *
  * Restart/redeploy the backend after exporting. See docs/assistant.md.
  */
@@ -17,6 +21,7 @@ import { formatPeriod, present } from '../frontend/src/content/format.js';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROFILE_PATH = path.join(root, 'frontend/src/content/profile.js');
 const PROMPT_PATH = path.join(root, 'backend/assistant/system-prompt.md');
+const GITHUB_PATH = path.join(root, 'backend/content/github.json');
 
 const p = profile;
 const lines = (...parts) => parts.flat().filter((part) => part !== null && part !== undefined && part !== false).join('\n');
@@ -200,6 +205,19 @@ function systemPrompt() {
   );
 }
 
+function githubConfig() {
+  const config = {
+    _generated: 'From frontend/src/content/profile.js by `npm run kb:export`. Do not edit by hand.',
+    username: p.socials.githubUsername,
+    // Shown in "Featured" already, so left out of the "More on GitHub" feed.
+    featuredRepos: p.featuredProjects.filter((project) => project.repo).map(({ repo }) => `${repo.owner}/${repo.name}`),
+    hiddenRepos: p.hiddenRepos ?? [],
+    externalRepos: p.externalRepos.map(({ owner, name, label }) => ({ owner, name, label })),
+  };
+  return `${JSON.stringify(config, null, 2)}
+`;
+}
+
 async function todoLines() {
   const source = await readFile(PROFILE_PATH, 'utf8');
   return source
@@ -209,7 +227,10 @@ async function todoLines() {
     .map(({ line, text }) => `  profile.js:${line}  ${text.slice(text.indexOf('TODO:') + 5).replace(/\*\/.*$/, '').trim()}`);
 }
 
-const outputs = [[PROMPT_PATH, systemPrompt()]];
+const outputs = [
+  [PROMPT_PATH, systemPrompt()],
+  [GITHUB_PATH, githubConfig()],
+];
 
 if (process.argv.includes('--check')) {
   let stale = false;

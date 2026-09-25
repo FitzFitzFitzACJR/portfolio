@@ -7,8 +7,8 @@
     "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
     "build": "cd frontend && npm run build",
     "start": "cd backend && npm start",
-    "kb:export": "node scripts/build-assistant-prompt.mjs",
-    "kb:check": "node scripts/build-assistant-prompt.mjs --check"
+    "kb:export": "node scripts/export-profile.mjs",
+    "kb:check": "node scripts/export-profile.mjs --check"
   },
   "keywords": [
     "portfolio",

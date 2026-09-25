@@ -1,0 +1,19 @@
+{
+  "_generated": "From frontend/src/content/profile.js by `npm run kb:export`. Do not edit by hand.",
+  "username": "FitzFitzFitzACJR",
+  "featuredRepos": [
+    "Kurisu21/webeenthere",
+    "FitzFitzFitzACJR/portfolio",
+    "FitzFitzFitzACJR/SysArch-SitInMonitoringSystem"
+  ],
+  "hiddenRepos": [
+    "pic"
+  ],
+  "externalRepos": [
+    {
+      "owner": "Kurisu21",
+      "name": "webeenthere",
+      "label": "Team project"
+    }
+  ]
+}

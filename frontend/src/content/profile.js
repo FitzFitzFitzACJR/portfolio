@@ -9,7 +9,8 @@
  *   Lines marked `// TODO:` are listed by `npm run kb:export`.
  */
 
-const GITHUB_USERNAME = 'FitzFitzFitz69';
+// Account was renamed from FitzFitzFitz69 in 2026; old profile links 404.
+const GITHUB_USERNAME = 'FitzFitzFitzACJR';
 const github = (repo) => `https://github.com/${GITHUB_USERNAME}/${repo}`;
 
 const profile = {
@@ -30,7 +31,7 @@ const profile = {
   email: 'cutadalamo@gmail.com',
   avatar: {
     // Phase 4 moves this into frontend/public as an optimized WebP.
-    src: 'https://raw.githubusercontent.com/FitzFitzFitz69/pic/main/994540f3-43ee-41d6-a692-72841d021de2.jpg',
+    src: `https://raw.githubusercontent.com/${GITHUB_USERNAME}/pic/main/994540f3-43ee-41d6-a692-72841d021de2.jpg`,
     alt: 'Portrait of Arnold Cutad Jr.',
   },
   resume: null, // TODO: '/resume.pdf' once a web copy without phone number/home address is added (Phase 4)
@@ -185,7 +186,10 @@ const profile = {
     },
   ],
 
-  // Team/external repos whose public metadata the backend may fetch (Phase 3).
+  // GitHub feed ("More on GitHub"): the backend lists your public repos, minus forks, archived
+  // repos, featured projects (shown above) and these hidden ones.
+  hiddenRepos: ['pic'], // holds the avatar image, not a project
+  // Repos owned by others that appear in featuredProjects; the backend fetches their public metadata.
   externalRepos: [{ owner: 'Kurisu21', name: 'webeenthere', label: 'Team project' }],
 
   assistant: {

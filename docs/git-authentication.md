@@ -1,9 +1,9 @@
 # Git Authentication Fix Guide
 
 ## Problem
-Git is using cached credentials for a different GitHub account (`Kurisu21`) when trying to push to `FitzFitzFitz69/portfolio.git`.
+Git is using cached credentials for a different GitHub account (`Kurisu21`) when trying to push to `FitzFitzFitzACJR/portfolio.git`.
 
-**Error:** `Permission to FitzFitzFitz69/portfolio.git denied to Kurisu21`
+**Error:** `Permission to FitzFitzFitzACJR/portfolio.git denied to Kurisu21`
 
 ## Solution Options
 
@@ -27,7 +27,7 @@ Git is using cached credentials for a different GitHub account (`Kurisu21`) when
    git push -u origin main
    ```
    - Windows will prompt for credentials
-   - Enter your `FitzFitzFitz69` GitHub username
+   - Enter your `FitzFitzFitzACJR` GitHub username
    - Use a **Personal Access Token** as the password (not your GitHub password)
 
 ### Option 2: Use Personal Access Token (Best Practice)
@@ -44,14 +44,14 @@ Git is using cached credentials for a different GitHub account (`Kurisu21`) when
    ```powershell
    git push -u origin main
    ```
-   - Username: `FitzFitzFitz69`
+   - Username: `FitzFitzFitzACJR`
    - Password: **Paste your Personal Access Token** (not your GitHub password)
 
 ### Option 3: Use SSH Instead of HTTPS
 
 1. **Change Remote URL to SSH:**
    ```powershell
-   git remote set-url origin git@github.com:FitzFitzFitz69/portfolio.git
+   git remote set-url origin git@github.com:FitzFitzFitzACJR/portfolio.git
    ```
 
 2. **Set Up SSH Key** (if not already done):
@@ -68,7 +68,7 @@ Git is using cached credentials for a different GitHub account (`Kurisu21`) when
 ### Option 4: Quick Fix - Update Remote with Token in URL
 
 ```powershell
-git remote set-url origin https://YOUR_TOKEN@github.com/FitzFitzFitz69/portfolio.git
+git remote set-url origin https://YOUR_TOKEN@github.com/FitzFitzFitzACJR/portfolio.git
 ```
 
 Replace `YOUR_TOKEN` with your Personal Access Token.
@@ -99,7 +99,7 @@ git push -u origin main
 ## Troubleshooting
 
 **If still getting 403 error:**
-- Make sure the repository `FitzFitzFitz69/portfolio` exists on GitHub
+- Make sure the repository `FitzFitzFitzACJR/portfolio` exists on GitHub
 - Verify you have write access to the repository
 - Check that you're logged into the correct GitHub account in your browser
 - Try using a Personal Access Token instead of password

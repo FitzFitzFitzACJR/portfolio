@@ -29,7 +29,7 @@ Set these in each service's **Environment** tab. Never commit real values.
 | `ANTHROPIC_API_KEY` | yes (for the chatbot) | Secret. Without it the site works and the chatbot shows as offline. |
 | `ANTHROPIC_MODEL` | no | Defaults to `claude-haiku-4-5`. |
 | `CHAT_DAILY_LIMIT` | no | Global chat messages per UTC day. Default 300, `0` = off. |
-| `GITHUB_PROFILE_URL` | yes | `https://github.com/FitzFitzFitz69` |
+| `GITHUB_TOKEN` | no | Raises GitHub's API limit for the projects feed (60 → 5,000 req/h). A fine-grained token with no permissions is enough. |
 
 ### Frontend (Static Site)
 
