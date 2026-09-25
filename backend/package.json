@@ -17,10 +17,11 @@
   "author": "Arnold Cutad Jr.",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "axios": "^1.6.2"
+    "express": "^4.18.2",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0"
   },
   "engines": {
     "node": "22.x || 24.x"
