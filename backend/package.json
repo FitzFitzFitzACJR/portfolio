@@ -8,7 +8,12 @@
     "dev": "node --watch server.js",
     "start": "node server.js"
   },
-  "keywords": ["express", "api", "openrouter", "chatbot"],
+  "keywords": [
+    "express",
+    "api",
+    "openrouter",
+    "chatbot"
+  ],
   "author": "Arnold Cutad Jr.",
   "license": "MIT",
   "dependencies": {
@@ -16,6 +21,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "axios": "^1.6.2"
+  },
+  "engines": {
+    "node": "22.x || 24.x"
   }
 }
-

@@ -37,18 +37,16 @@ A production-ready full-stack portfolio website with an integrated AI chatbot as
 
    **Backend (.env):**
    ```env
-   FLOWISE_API_URL=https://cloud.flowise.ai/api/v1/prediction/your-chatflow-id
+   FLOWISE_API_URL=https://cloud.flowiseai.com/api/v1/prediction/your-chatflow-id
    FLOWISE_API_KEY=your_flowise_api_key_here
-   FLOWISE_CHATFLOW_ID=your-chatflow-id
-   FLOWISE_BASE_URL=https://cloud.flowise.ai
-   GITHUB_PROFILE_URL=https://github.com/yourusername
+   GITHUB_PROFILE_URL=https://github.com/FitzFitzFitz69
    PORT=5000
    ```
 
    **Frontend (.env):**
    ```env
    VITE_API_BASE_URL=http://localhost:5000
-   VITE_GITHUB_PROFILE_URL=https://github.com/yourusername
+   VITE_GITHUB_PROFILE_URL=https://github.com/FitzFitzFitz69
    ```
 
 4. Start development servers:
@@ -65,28 +63,25 @@ The chatbot uses **Flowise AI** to power the chatflow. You can use either:
 - **Flowise Cloud** (recommended for quick setup)
 - **Self-hosted Flowise** instance
 
-**📝 Flowise Resources Available:**
-- `FLOWISE_SYSTEM_PROMPT.txt` - Copy-paste ready system prompt (quickest option)
-- `FLOWISE_PROMPT_TEMPLATE.md` - Comprehensive guide with detailed instructions
-- `FLOWISE_QUICK_START.md` - Step-by-step setup guide
-- `FLOWISE_TROUBLESHOOTING.md` - Troubleshooting guide (especially if getting HTML responses)
-- `FLOWISE_KNOWLEDGE_BASE.md` - Complete knowledge base document with portfolio info and FAQs
-- `FLOWISE_KNOWLEDGE_BASE_SETUP.md` - Guide for setting up knowledge base in Flowise
+**📝 Flowise resources (in [`docs/`](./docs)):**
+- [`docs/flowise-setup.md`](./docs/flowise-setup.md) - Create the chatflow, add the knowledge base, connect the backend, troubleshooting
+- [`docs/flowise-system-prompt.txt`](./docs/flowise-system-prompt.txt) - Copy-paste ready system prompt
+- [`docs/flowise-knowledge-base.md`](./docs/flowise-knowledge-base.md) - Portfolio facts and FAQs to load into Flowise
 
 ### Getting Your Flowise Chatflow URL
 
 1. **If using Flowise Cloud:**
-   - Sign up at [cloud.flowise.ai](https://cloud.flowise.ai)
+   - Sign up at [cloud.flowiseai.com](https://cloud.flowiseai.com)
    - Create a new chatflow
-   - **Use the prompt template** from `FLOWISE_PROMPT_TEMPLATE.md` to configure your chatflow
+   - **Use the prompt template** from `docs/flowise-system-prompt.txt` to configure your chatflow
    - Configure your chatflow with portfolio assistant prompts
-   - Copy the chatflow API URL (format: `https://cloud.flowise.ai/api/v1/prediction/your-chatflow-id`)
+   - Copy the chatflow API URL (format: `https://cloud.flowiseai.com/api/v1/prediction/your-chatflow-id`)
    - Or copy just the chatflow ID
 
 2. **If using self-hosted Flowise:**
    - Deploy Flowise on your server
    - Create a chatflow
-   - **Use the prompt template** from `FLOWISE_PROMPT_TEMPLATE.md` to configure your chatflow
+   - **Use the prompt template** from `docs/flowise-system-prompt.txt` to configure your chatflow
    - Use your Flowise instance URL (format: `http://your-flowise-instance/api/v1/prediction/your-chatflow-id`)
 
 ### Configuration Options
@@ -95,14 +90,14 @@ You can configure Flowise in two ways:
 
 **Option 1: Full API URL**
 ```env
-FLOWISE_API_URL=https://cloud.flowise.ai/api/v1/prediction/your-chatflow-id
+FLOWISE_API_URL=https://cloud.flowiseai.com/api/v1/prediction/your-chatflow-id
 FLOWISE_API_KEY=your_api_key_if_required
 ```
 
 **Option 2: Chatflow ID + Base URL**
 ```env
 FLOWISE_CHATFLOW_ID=your-chatflow-id
-FLOWISE_BASE_URL=https://cloud.flowise.ai
+FLOWISE_BASE_URL=https://cloud.flowiseai.com
 FLOWISE_API_KEY=your_api_key_if_required
 ```
 
@@ -110,10 +105,10 @@ FLOWISE_API_KEY=your_api_key_if_required
 
 ### Backend (.env)
 
-- `FLOWISE_API_URL` - Full Flowise chatflow API URL (e.g., `https://cloud.flowise.ai/api/v1/prediction/your-chatflow-id`) - **OR** use `FLOWISE_CHATFLOW_ID` + `FLOWISE_BASE_URL`
+- `FLOWISE_API_URL` - Full Flowise chatflow API URL (e.g., `https://cloud.flowiseai.com/api/v1/prediction/your-chatflow-id`) - **OR** use `FLOWISE_CHATFLOW_ID` + `FLOWISE_BASE_URL`
 - `FLOWISE_API_KEY` - Your Flowise API key (optional, required if your chatflow has authentication)
 - `FLOWISE_CHATFLOW_ID` - Your Flowise chatflow ID (alternative to FLOWISE_API_URL)
-- `FLOWISE_BASE_URL` - Flowise base URL (default: `https://cloud.flowise.ai`, used with FLOWISE_CHATFLOW_ID)
+- `FLOWISE_BASE_URL` - Flowise base URL (default: `https://cloud.flowiseai.com`, used with FLOWISE_CHATFLOW_ID)
 - `GITHUB_PROFILE_URL` - Your GitHub profile URL (required for projects section, e.g., `https://github.com/username`)
 - `PORT` - Server port (default: 5000)
 
@@ -124,7 +119,7 @@ FLOWISE_API_KEY=your_api_key_if_required
 
 ## Render Deployment
 
-**📘 For detailed deployment instructions, see [RENDER_DEPLOYMENT.md](./RENDER_DEPLOYMENT.md)**
+**📘 For detailed deployment instructions, see [docs/deployment.md](./docs/deployment.md)**
 
 ### Quick Setup
 
@@ -140,10 +135,8 @@ FLOWISE_API_KEY=your_api_key_if_required
 ```env
 NODE_ENV=production
 PORT=10000
-FLOWISE_API_URL=https://cloud.flowise.ai/api/v1/prediction/your-chatflow-id
+FLOWISE_API_URL=https://cloud.flowiseai.com/api/v1/prediction/your-chatflow-id
 FLOWISE_API_KEY=your_api_key_if_required
-FLOWISE_CHATFLOW_ID=your-chatflow-id
-FLOWISE_BASE_URL=https://cloud.flowise.ai
 GITHUB_PROFILE_URL=https://github.com/FitzFitzFitz69
 FRONTEND_URL=https://your-frontend.onrender.com
 ```
