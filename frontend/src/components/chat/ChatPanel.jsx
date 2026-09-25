@@ -4,13 +4,15 @@ import { sendChatMessage, streamChatMessage } from '../../api';
 import ChatMarkdown from './ChatMarkdown';
 import StatusDot from './StatusDot';
 import useFocusTrap from './useFocusTrap';
-import { createMessageId, getSessionId, loadMessages, resetSession, saveMessages } from './chatSession';
+import { clearMessages, createMessageId, loadMessages, saveMessages } from './chatSession';
 
 const MAX_LENGTH = 1000;
+const HISTORY_TURNS = 10; // must match MAX_HISTORY_MESSAGES in backend/routes/chat.js
 
 const ERROR_MESSAGES = {
-  CHAT_DISABLED: 'The assistant is offline right now. You can still reach Arnold using the links below.',
+  CHAT_DISABLED: `The assistant is offline right now. You can reach ${profile.firstName} at ${profile.email}.`,
   RATE_LIMITED: "You're sending messages quickly. Please wait a few minutes and try again.",
+  DAILY_LIMIT: `The assistant has reached today's message limit. Please try again tomorrow, or email ${profile.firstName} at ${profile.email}.`,
   UPSTREAM_TIMEOUT: 'The assistant took too long to answer. Please try again.',
   UPSTREAM_ERROR: 'The assistant hit a snag. Please try again in a moment.',
   INVALID_INPUT: `That message couldn't be sent. Messages must be under ${MAX_LENGTH.toLocaleString()} characters.`,
@@ -19,6 +21,13 @@ const ERROR_MESSAGES = {
 const errorMessage = (code) => ERROR_MESSAGES[code] ?? ERROR_MESSAGES.UPSTREAM_ERROR;
 
 const greetingMessage = () => ({ id: 'greeting', role: 'assistant', content: profile.assistant.greeting });
+
+/** Completed turns to send as context (the backend is stateless). Skips the greeting and failed replies. */
+const toHistory = (messages) =>
+  messages
+    .filter((m) => m.id !== 'greeting' && !m.pending && !m.error && m.content.trim())
+    .slice(-HISTORY_TURNS)
+    .map(({ role, content }) => ({ role, content }));
 
 const STATUS_LABEL = {
   checking: 'Connecting…',
@@ -32,14 +41,12 @@ export default function ChatPanel({ open, status, onRetry, onClose }) {
   const [messages, setMessages] = useState(() => loadMessages() ?? [greetingMessage()]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
-  const sessionIdRef = useRef(null);
   const abortRef = useRef(null);
   const panelRef = useRef(null);
   const listRef = useRef(null);
   const inputRef = useRef(null);
   const closeRef = useRef(null);
 
-  sessionIdRef.current ??= getSessionId();
   const canChat = status === 'online';
   const showComposer = status !== 'offline' && status !== 'unreachable';
 
@@ -67,6 +74,7 @@ export default function ChatPanel({ open, status, onRetry, onClose }) {
       if (!text || busy || !canChat) return;
 
       const replyId = createMessageId();
+      const history = toHistory(messages);
       setMessages((all) => [
         ...all,
         { id: createMessageId(), role: 'user', content: text },
@@ -77,7 +85,7 @@ export default function ChatPanel({ open, status, onRetry, onClose }) {
 
       const controller = new AbortController();
       abortRef.current = controller;
-      const request = { message: text, sessionId: sessionIdRef.current, signal: controller.signal };
+      const request = { message: text, history, signal: controller.signal };
       const append = (chunk) => patch(replyId, (m) => ({ content: m.content + chunk }));
 
       try {
@@ -100,14 +108,14 @@ export default function ChatPanel({ open, status, onRetry, onClose }) {
         });
       }
     },
-    [busy, canChat]
+    [busy, canChat, messages]
   );
 
   const stop = () => abortRef.current?.abort();
 
   const newChat = () => {
     abortRef.current?.abort();
-    sessionIdRef.current = resetSession();
+    clearMessages();
     setMessages([greetingMessage()]);
     setInput('');
     inputRef.current?.focus();

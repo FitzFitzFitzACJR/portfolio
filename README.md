@@ -4,9 +4,9 @@ A production-ready full-stack portfolio website with an integrated AI chatbot as
 
 ## Tech Stack
 
-- **Frontend:** React (Vite), Tailwind CSS, Axios
+- **Frontend:** React (Vite), Tailwind CSS
 - **Backend:** Node.js, Express
-- **AI:** Flowise AI (Chatflow Cloud API)
+- **AI:** Claude Haiku 4.5 via the Anthropic API (streaming)
 - **Deployment:** Render-ready
 
 ## Features
@@ -22,7 +22,7 @@ A production-ready full-stack portfolio website with an integrated AI chatbot as
 
 ### Prerequisites
 
-- Node.js (v18 or higher)
+- Node.js 22 (see `.nvmrc`)
 - npm or yarn
 
 ### Installation
@@ -37,8 +37,7 @@ A production-ready full-stack portfolio website with an integrated AI chatbot as
 
    **Backend (.env):**
    ```env
-   FLOWISE_API_URL=https://cloud.flowiseai.com/api/v1/prediction/your-chatflow-id
-   FLOWISE_API_KEY=your_flowise_api_key_here
+   ANTHROPIC_API_KEY=<your-anthropic-api-key>
    GITHUB_PROFILE_URL=https://github.com/FitzFitzFitz69
    PORT=5000
    ```
@@ -56,58 +55,22 @@ A production-ready full-stack portfolio website with an integrated AI chatbot as
    - Frontend: http://localhost:5173
    - Backend: http://localhost:5000
 
-## Flowise AI Setup
+## AI Assistant
 
-The chatbot uses **Flowise AI** to power the chatflow. You can use either:
-- **Flowise Cloud** (recommended for quick setup)
-- **Self-hosted Flowise** instance
+The chatbot calls **Claude Haiku 4.5** directly from the backend (Anthropic Messages API) and streams replies
+to the browser. Its knowledge comes from `frontend/src/content/profile.js`: after editing that file, run
+`npm run kb:export` to regenerate `backend/assistant/system-prompt.md`, then restart/redeploy the backend.
 
-**📝 Flowise resources (in [`docs/`](./docs)):**
-- [`docs/flowise-setup.md`](./docs/flowise-setup.md) - Create the chatflow, add the knowledge base, connect the backend, troubleshooting
-- [`docs/flowise-system-prompt.txt`](./docs/flowise-system-prompt.txt) - Copy-paste ready system prompt
-- [`docs/flowise-knowledge-base.md`](./docs/flowise-knowledge-base.md) - Portfolio facts and FAQs to load into Flowise
-
-### Getting Your Flowise Chatflow URL
-
-1. **If using Flowise Cloud:**
-   - Sign up at [cloud.flowiseai.com](https://cloud.flowiseai.com)
-   - Create a new chatflow
-   - **Use the prompt template** from `docs/flowise-system-prompt.txt` to configure your chatflow
-   - Configure your chatflow with portfolio assistant prompts
-   - Copy the chatflow API URL (format: `https://cloud.flowiseai.com/api/v1/prediction/your-chatflow-id`)
-   - Or copy just the chatflow ID
-
-2. **If using self-hosted Flowise:**
-   - Deploy Flowise on your server
-   - Create a chatflow
-   - **Use the prompt template** from `docs/flowise-system-prompt.txt` to configure your chatflow
-   - Use your Flowise instance URL (format: `http://your-flowise-instance/api/v1/prediction/your-chatflow-id`)
-
-### Configuration Options
-
-You can configure Flowise in two ways:
-
-**Option 1: Full API URL**
-```env
-FLOWISE_API_URL=https://cloud.flowiseai.com/api/v1/prediction/your-chatflow-id
-FLOWISE_API_KEY=your_api_key_if_required
-```
-
-**Option 2: Chatflow ID + Base URL**
-```env
-FLOWISE_CHATFLOW_ID=your-chatflow-id
-FLOWISE_BASE_URL=https://cloud.flowiseai.com
-FLOWISE_API_KEY=your_api_key_if_required
-```
+Setup, cost controls and troubleshooting: **[docs/assistant.md](./docs/assistant.md)**.
 
 ## Environment Variables
 
 ### Backend (.env)
 
-- `FLOWISE_API_URL` - Full Flowise chatflow API URL (e.g., `https://cloud.flowiseai.com/api/v1/prediction/your-chatflow-id`) - **OR** use `FLOWISE_CHATFLOW_ID` + `FLOWISE_BASE_URL`
-- `FLOWISE_API_KEY` - Your Flowise API key (optional, required if your chatflow has authentication)
-- `FLOWISE_CHATFLOW_ID` - Your Flowise chatflow ID (alternative to FLOWISE_API_URL)
-- `FLOWISE_BASE_URL` - Flowise base URL (default: `https://cloud.flowiseai.com`, used with FLOWISE_CHATFLOW_ID)
+- `ANTHROPIC_API_KEY` - Anthropic API key (required for the chatbot; without it the site works and the chatbot shows as offline)
+- `ANTHROPIC_MODEL` - Optional, defaults to `claude-haiku-4-5`
+- `CHAT_DAILY_LIMIT` - Optional global cap on chat messages per UTC day (default 300, `0` = off)
+- `FRONTEND_URL` - Comma-separated origins allowed by CORS (your deployed frontend)
 - `GITHUB_PROFILE_URL` - Your GitHub profile URL (required for projects section, e.g., `https://github.com/username`)
 - `PORT` - Server port (default: 5000)
 
@@ -133,8 +96,7 @@ FLOWISE_API_KEY=your_api_key_if_required
 ```env
 NODE_ENV=production
 PORT=10000
-FLOWISE_API_URL=https://cloud.flowiseai.com/api/v1/prediction/your-chatflow-id
-FLOWISE_API_KEY=your_api_key_if_required
+ANTHROPIC_API_KEY=<your-anthropic-api-key>
 GITHUB_PROFILE_URL=https://github.com/FitzFitzFitz69
 FRONTEND_URL=https://your-frontend.onrender.com
 ```
@@ -178,7 +140,7 @@ portfolio-ai/
 ## API Endpoints
 
 Errors are JSON `{ "error": "<short message>", "code": "<CODE>" }` with codes such as
-`CHAT_DISABLED`, `RATE_LIMITED`, `UPSTREAM_TIMEOUT`, `UPSTREAM_ERROR`, `INVALID_INPUT`, `CORS_REJECTED`.
+`CHAT_DISABLED`, `RATE_LIMITED`, `DAILY_LIMIT`, `UPSTREAM_TIMEOUT`, `UPSTREAM_ERROR`, `INVALID_INPUT`, `CORS_REJECTED`.
 Chat routes are rate-limited (20 requests / 5 min / IP); messages are capped at 1,000 characters.
 
 ### GET /health
@@ -195,7 +157,13 @@ Non-streaming reply (used as a fallback).
 
 **Request:**
 ```json
-{ "message": "What technologies do you use?", "sessionId": "optional-uuid-for-memory" }
+{
+  "message": "What technologies do you use?",
+  "history": [
+    { "role": "user", "content": "Hi" },
+    { "role": "assistant", "content": "Hello! Ask me about Arnold." }
+  ]
+}
 ```
 
 **Response:**
@@ -203,7 +171,7 @@ Non-streaming reply (used as a fallback).
 { "reply": "I use React, Node.js, Express, ..." }
 ```
 
-`sessionId` is forwarded to Flowise (`overrideConfig.sessionId`) so a Memory node can keep context.
+`history` is optional: the last 10 turns (max 2,000 chars each, 12,000 total) sent as conversation context.
 
 ### POST /api/chat/stream
 

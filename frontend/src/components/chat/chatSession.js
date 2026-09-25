@@ -1,10 +1,8 @@
-// Per-visit chat session: a random id (sent to Flowise for memory) and the transcript,
-// kept in sessionStorage so a reload doesn't lose the conversation. Storage can be
-// unavailable (private mode, blocked cookies), so everything falls back to memory.
+// Per-visit chat transcript, kept in sessionStorage so a reload doesn't lose the conversation
+// (its recent turns are also sent to the backend as context). Storage can be unavailable
+// (private mode, blocked cookies), in which case the chat simply isn't persisted.
 
-const SESSION_KEY = 'portfolio.chat.sessionId';
 const MESSAGES_KEY = 'portfolio.chat.messages';
-let memorySessionId = null;
 
 function newId() {
   if (globalThis.crypto?.randomUUID) return crypto.randomUUID();
@@ -18,28 +16,12 @@ function newId() {
 
 export const createMessageId = newId;
 
-export function getSessionId() {
+export function clearMessages() {
   try {
-    let id = sessionStorage.getItem(SESSION_KEY);
-    if (!id) {
-      id = newId();
-      sessionStorage.setItem(SESSION_KEY, id);
-    }
-    return id;
-  } catch {
-    return (memorySessionId ??= newId());
-  }
-}
-
-export function resetSession() {
-  memorySessionId = null;
-  try {
-    sessionStorage.removeItem(SESSION_KEY);
     sessionStorage.removeItem(MESSAGES_KEY);
   } catch {
     /* storage unavailable */
   }
-  return getSessionId();
 }
 
 export function loadMessages() {

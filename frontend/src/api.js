@@ -2,7 +2,7 @@ const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:500
 
 /**
  * Error with a stable `code` (CHAT_DISABLED, RATE_LIMITED, UPSTREAM_TIMEOUT, UPSTREAM_ERROR,
- * INVALID_INPUT, NETWORK, ...). `fallback` marks transport failures where retrying the
+ * DAILY_LIMIT, INVALID_INPUT, NETWORK, ...). `fallback` marks transport failures where retrying the
  * non-streaming endpoint makes sense.
  */
 export class ApiError extends Error {
@@ -49,9 +49,12 @@ export const pingHealth = ({ signal, timeoutMs = 10_000 } = {}) => request('/hea
 /** GET /api/chat/status → { enabled } */
 export const getChatStatus = ({ signal, timeoutMs = 8_000 } = {}) => request('/api/chat/status', { signal, timeoutMs });
 
-/** POST /api/chat → reply text (non-streaming fallback). */
-export async function sendChatMessage({ message, sessionId, signal }) {
-  const data = await request('/api/chat', { method: 'POST', body: { message, sessionId }, signal });
+/**
+ * POST /api/chat → reply text (non-streaming fallback).
+ * `history` is the recent conversation: [{ role: 'user'|'assistant', content }].
+ */
+export async function sendChatMessage({ message, history, signal }) {
+  const data = await request('/api/chat', { method: 'POST', body: { message, history }, signal });
   return data.reply;
 }
 
@@ -59,13 +62,13 @@ export async function sendChatMessage({ message, sessionId, signal }) {
  * POST /api/chat/stream (Server-Sent Events). Calls onToken(text) per chunk; resolves on `end`.
  * Throws ApiError; `fallback: true` means the stream transport failed before any tokens arrived.
  */
-export async function streamChatMessage({ message, sessionId, signal, onToken }) {
+export async function streamChatMessage({ message, history, signal, onToken }) {
   let res;
   try {
     res = await fetch(`${API_BASE_URL}/api/chat/stream`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
-      body: JSON.stringify({ message, sessionId }),
+      body: JSON.stringify({ message, history }),
       signal,
     });
   } catch (err) {
